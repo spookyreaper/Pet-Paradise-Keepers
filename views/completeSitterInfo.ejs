@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Sitter Profile</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<%- include('partials/header') %> 
+
+<div class="container">
+    <h1>Complete Your Profile</h1>
+    
+    <form action="/sitter/complete-info" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="biography">Biography:</label>
+            <textarea id="biography" name="biography" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="experience">Experience:</label>
+            <textarea type="text" id="experience" name="experience" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="rate">Hourly Rate:</label>
+            <input type="number" id="rate" name="rate" required />
+        </div>
+        
+        <div class="form-group">
+            <label for="profilePhoto">Profile Photo:</label>
+            <input type="file" id="profilePhoto" name="profilePhoto" />
+        </div>
+        
+        <button type="submit" class="button">Complete Profile</button>
+    </form>
+</div>
+
+<%- include('partials/footer') %> 
+
+</body>
+</html>

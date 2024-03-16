@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/styles.css">
+  <title>Dashboard</title>
+</head>
+<body>
+  <%- include('../partials/header') %> 
+
+  <div class="dashboard-wrapper">
+    <aside class="sidebar">
+      <h2><%= user.firstName %> <%= user.lastName %></h2>
+      <p>WALLET</p>
+      <p>$0.00</p>
+      <button class="logout-button">Apply Promo Code</button>
+      <button class="logout-button">Add Payment Method</button>
+      <button class="logout-button">Edit Payment</button>
+    </aside>
+    
+    <main class="main-content">
+      <h1>Welcome to Your Dashboard, <%= user.firstName %>!</h1>
+      <div class="referral-info">
+        <h2>REFER A FRIEND, GET $20</h2>
+        <p>For every friend that books their first stay, we'll give you a $20 credit towards your next booking.</p>
+        <button class="logout-button">Invite a Friend</button>
+      </div>
+      <div class="pet-info">
+        <%- include('../partials/petList') %> 
+      </div>
+      <button onclick="location.href='/addPet';" class="add-pet-button">Add Pet</button>
+    </main>
+  </div>
+
+  <%- include('../partials/footer') %> 
+
+  <script>
+    function logout() {
+      fetch('/logout', { method: 'POST' })
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '/login';
+          } else {
+            throw new Error('Logout failed.');
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>  
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!-- partials/header.ejs -->
+<nav class="navbar">
+    <a href="/" class="navbar-brand">Pet Paradise Keepers</a>
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a href="/search-sitters" class="nav-link">Search Sitters</a>
+      </li>
+      <li class="nav-item">
+        <a href="/become-sitter" class="nav-link">Become a Sitter</a>
+      </li>
+      <li class="nav-item">
+        <a href="/services" class="nav-link">Our Services</a>
+      </li>
+    </ul>
+  
+    <% if (user) { %>
+      <div class="user-dropdown">
+        <button class="user-dropdown-toggle" id="userMenuButton">
+          <%= user.firstName %> <span class="caret"></span>
+        </button>
+        <div class="user-dropdown-menu" aria-labelledby="userMenuButton">
+          <a class="dropdown-item" href="/dashboard">Dashboard</a>
+          <a class="dropdown-item" href="/profile">Profile</a>
+          <a class="dropdown-item" href="/inbox">Inbox</a>
+          <a class="dropdown-item" href="/settings">Settings</a>
+          <a class="dropdown-item" href="/your-pets">Your Pets</a>
+          <div class="dropdown-divider"></div>
+          <form id="logoutForm" action="/logout" method="POST" style="display: none;">
+            <!-- CSRF token insertion point if using CSRF protection -->
+          </form>
+          <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">Log out</a>
+        </div>
+      </div>
+    <% } else { %>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="/login" class="nav-link">Login</a>
+        </li>
+        <li class="nav-item">
+          <a href="/register" class="nav-link">Register</a>
+        </li>
+      </ul>
+    <% } %>
+  </nav>
+  

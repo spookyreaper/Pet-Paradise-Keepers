@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Pet</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <div class="container">
+        <h1>Add Your Pet</h1>
+        <form action="/addPet" method="post" enctype="multipart/form-data">
+            <div>
+                <label for="petName">Pet Name:</label>
+                <input type="text" id="petName" name="petName" required>
+            </div>
+            <div>
+                <label for="petType">Pet Type:</label>
+                <input type="text" id="petType" name="petType" required>
+            </div>
+            <div>
+                <label for="petMedicalHistory">Medical History:</label>
+                <textarea id="petMedicalHistory" name="petMedicalHistory"></textarea>
+            </div>
+            <div>
+                <label for="petPhoto">Pet Photo:</label>
+                <input type="file" id="petPhoto" name="petPhoto">
+            </div>
+            <button type="submit">Add Pet</button>
+        </form>
+    </div>
+
+    <%- include('partials/footer') %>
+
+</body>
+</html>

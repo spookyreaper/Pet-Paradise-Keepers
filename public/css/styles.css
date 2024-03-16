@@ -1,0 +1,405 @@
+/* General Styles */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f7f7;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    color: #70c542; 
+    text-decoration: none;
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    padding: 0;
+}
+
+.nav-item {
+    margin-left: 1rem;
+}
+
+.nav-link {
+    color: #333;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+}
+
+/* User Dropdown */
+/* User Dropdown Menu */
+.user-dropdown {
+    position: relative; /* For absolute positioning of dropdown menu */
+  }
+  
+  .user-dropdown-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    color: #333; /* Adjust as per color scheme */
+  }
+  
+  .user-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%; /* Aligns the top of the dropdown right below the toggle button */
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 4px; /* To match other elements */
+    overflow: hidden; /* To match the border-radius */
+    z-index: 1000; /* To make sure dropdown appears above other content */
+  }
+  
+  .user-dropdown-menu .dropdown-item {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    color: #333;
+    text-decoration: none;
+    background: none;
+    border: none;
+    width: 100%; /* Ensure full width */
+    text-align: left; /* Align text to the left */
+  }
+  
+  .user-dropdown-menu .dropdown-item:hover,
+  .user-dropdown-menu .dropdown-item:focus {
+    background-color: #f0f0f0; /* Slight grey to indicate hover */
+  }
+  
+  .user-dropdown-menu .dropdown-divider {
+    border-top: 1px solid #eaeaea; /* Light divider color */
+    margin: 0; /* Remove default margin */
+  }
+  
+  /* Show dropdown menu on hover */
+  .user-dropdown:hover .user-dropdown-menu {
+    display: block;
+    animation: fadeIn 0.3s; /* Smooth fade in effect */
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Logout Form */
+  #logoutForm {
+    display: none;
+  }
+  
+  /* Logout button hover */
+  .dropdown-item.logout-button:hover {
+    color: #d9534f; /* Give a red color to indicate a destructive action */
+  }  
+
+/* Dashboard Wrapper and Content */
+.dashboard-wrapper {
+    display: grid;
+    grid-template-columns: 250px 1fr; 
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.sidebar {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.main-content {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile */
+.profile {
+    display: flex;
+    align-items: center;
+}
+
+.profile-picture {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+/* Pets List */
+.pet-info ul {
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.pet-info li {
+    list-style: none;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pet-photo {
+    width: 60px;  
+    height: 60px; 
+    border-radius: 50%;
+    margin-right: 20px;
+    object-fit: cover; 
+}
+
+/* Buttons */
+button.logout-button,
+button.add-pet-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin: 2px;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button.logout-button:hover,
+button.add-pet-button:hover {
+    background-color: #0056b3;
+}
+
+/* Footer */
+footer {
+    background-color: #fff;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styling */
+form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type="file"] {
+    display: block;
+    margin-top: 5px;
+}
+
+img {
+    margin-top: 10px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    form {
+        padding: 15px;
+    }
+
+    .edit-pet-button {
+        padding: 8px 10px;
+    }
+}
+
+/* Container */
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"],
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-group input[type="file"] {
+    border: none;
+}
+
+.button {
+    background-color: #5cb85c;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.button:hover {
+    background-color: #4cae4c;
+}
+
+header, footer {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+.signup-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+.edit-pet-button {
+    display: inline-block;
+    background-color: #f0ad4e;
+    color: white;
+    padding: 5px 10px;
+    margin-top: 10px;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-pet-button:hover {
+    background-color: #ec971f;
+}
+
+/* Additional Form Styling */
+.form-group input, .form-group textarea {
+    background-color: #f8f9fa;
+    margin-bottom: 10px;
+}
+
+/* Enhanced Button Styles */
+.button {
+    font-weight: bold;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Image Preview Styling */
+.image-preview {
+    width: 100px;
+    height: auto;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    .form-group label {
+        margin-bottom: 5px;
+    }
+
+    .button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
+
+/* Accessibility: Focus Styles */
+button:focus, input:focus, textarea:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}

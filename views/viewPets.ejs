@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Pets</title>
+</head>
+<body>
+  <h1>Your Pets</h1>
+  <% if (pets && pets.length > 0) { %>
+    <ul>
+      <% pets.forEach(function(pet) { %>
+        <li>
+          <h2><%= pet.name %></h2>
+          <p>Type: <%= pet.type %></p>
+          <p>Medication History: <%= pet.medicationHistory %></p>
+          <p>Schedule: <%= pet.schedule %></p>
+          <% if (pet.photoUrl) { %>
+            <img src="<%= pet.photoUrl %>" alt="<%= pet.name %>" style="max-width: 200px;">
+          <% } %>
+        </li>
+      <% }); %>
+    </ul>
+  <% } else { %>
+    <p>No pets found!</p>
+  <% } %>
+</body>
+</html>
