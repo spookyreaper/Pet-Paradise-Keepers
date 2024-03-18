@@ -12,7 +12,7 @@
   <div class="dashboard-wrapper">
     <aside class="sidebar">
       <h2>Welcome, <%= user.firstName %> <%= user.lastName %></h2>
-      <!-- Sitters might not have a wallet or promo codes, adjust or remove these -->
+      <img src="<%= user.profilePhoto ? '/' + user.profilePhoto : '/images/default-profile.png' %>" alt="Profile Photo" class="profile-photo">
       <button class="button" onclick="location.href='/sitter/profile';">Update Profile</button>
       <button class="button" onclick="location.href='/sitter/appointments';">View Appointments</button>
       <button class="button" onclick="location.href='/sitter/availability';">Set Availability</button>
@@ -21,21 +21,20 @@
     
     <main class="main-content">
       <h1>Your Sitter Dashboard</h1>
-      <div class="referral-info">
-        <h2>REFER A FRIEND, GET $20</h2>
-        <p>Invite other sitters or pet owners and earn credits when they join and complete a booking.</p>
-        <button class="logout-button">Invite a Friend</button>
+      
+      <div class="bio-info">
+        <h2>About Me</h2>
+        <p><%= user.biography %></p>
+        <h2>Experience</h2>
+        <p><%= user.experience %></p>
+        <h2>Rate</h2>
+        <p>$<%= user.rate %>/hour</p>
       </div>
 
-      <!-- Adjust or replace this section according to what sitters should see -->
       <div class="appointment-info">
         <h2>Your Upcoming Appointments</h2>
-        <!-- Dynamically list upcoming appointments. Placeholder content here. -->
         <p>No upcoming appointments. Get ready to help more pets!</p>
       </div>
-      
-      <!-- Sitters likely don't need to add pets, so this section is commented out -->
-      <!-- <button onclick="location.href='/add-pet';" class="add-pet-button">Add Pet</button> -->
     </main>
   </div>
 

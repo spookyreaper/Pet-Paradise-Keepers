@@ -82,14 +82,14 @@ const postRegister = async (req, res) => {
   }
 };
 
-// In your authController or wherever logout is handled
+
 const logout = (req, res) => {
   req.session.destroy(err => {
     if (err) {
       console.error('Logout error:', err);
       return res.status(500).send('Could not log out, please try again.');
     }
-    res.clearCookie('connect.sid'); // Clear the session cookie if you're using express-session
+    res.clearCookie('connect.sid'); 
     return res.redirect('/login');
   });
 };

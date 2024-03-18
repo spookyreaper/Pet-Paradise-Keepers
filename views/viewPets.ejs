@@ -10,7 +10,7 @@
       <div>
         <h3><%= pet.name %></h3>
         <p>Type: <%= pet.type %></p>
-        <p>Medical History: <%= pet.medicationHistory %></p> <!-- Ensure this field matches your Pet schema -->
+        <p>Medical History: <%= pet.medicationHistory %></p> 
         <% if(pet.photoUrl) { %>
           <img src="/<%= pet.photoUrl %>" alt="<%= pet.name %>" />
         <% } %>

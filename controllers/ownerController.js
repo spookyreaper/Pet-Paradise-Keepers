@@ -1,9 +1,9 @@
-// ownerController.js
 
 const User = require('../models/accountSchema');
 const Pet = require('../models/Pet');
+const bcrypt = require('bcrypt');
 
-// Submit owner information and optionally add a pet
+
 async function submitOwnerInfo(req, res) {
     try {
         const userId = req.session.userId;
@@ -13,7 +13,6 @@ async function submitOwnerInfo(req, res) {
         const petPhoto = req.files['petPhoto'] ? req.files['petPhoto'][0].path.replace('public/', '') : '';
         const ownerPhoto = req.files['ownerPhoto'] ? req.files['ownerPhoto'][0].path.replace('public/', '') : '';
 
-        // Create a pet if information is provided
         let petId = null;
         if (petName && petType) {
             const newPet = await Pet.create({
@@ -26,7 +25,6 @@ async function submitOwnerInfo(req, res) {
             petId = newPet._id;
         }
 
-        // Update owner's photo and add the new pet to their list of pets
         await User.findByIdAndUpdate(userId, { 
             $set: { ownerPhoto: ownerPhoto },
             ...(petId && { $push: { pets: petId } })
@@ -39,83 +37,108 @@ async function submitOwnerInfo(req, res) {
     }
 }
 
-// In ownerController.js
 async function completeOwnerInfo(req, res) {
-  // Check if the user ID is available in the session
   if (!req.session || !req.session.userId) {
     console.error('Session or User ID not found');
     return res.status(401).send('You need to be logged in to access this page.');
   }
 
   try {
-    // Fetch the user based on the session user ID
     const user = await User.findById(req.session.userId);
 
-    // If the user is not found, return a 404 response
     if (!user) {
       console.error(`User with ID ${req.session.userId} not found`);
       return res.status(404).render('error', { message: 'User not found' });
     }
 
-    // Render the completeOwnerInfo view, passing the user data
     res.render('completeOwnerInfo', { user });
   } catch (error) {
-    // Log the error and return a 500 response
     console.error('Error fetching user:', error);
     res.status(500).render('error', { message: 'An error occurred while fetching user information' });
   }
 }
   
+async function getOwnerProfile(req, res) {
+  try {
+    const user = await User.findById(req.session.userId);
+    if (!user) {
+      return res.redirect('/login');
+    }
+    if (user.role === 'owner') {
+      res.render('owner/profile', { user: user });
+    } else {
+      res.status(403).send('Access denied');
+    }
+  } catch (error) {
+    console.error('Error fetching user from database:', error);
+    res.status(500).render('error', { error: error });
+  }
+}
 
-// Display form to edit owner profile
+
 async function getEditProfile(req, res) {
-    try {
-        const user = await User.findById(req.session.userId);
-        if (!user) throw new Error('User not found');
-        res.render('editProfile', { user });
-    } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).send('An error occurred.');
-    }
+  try {
+      const user = await User.findById(req.session.userId);
+      if (!user) throw new Error('User not found');
+      res.render('editProfile', { user });
+  } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).send('An error occurred.');
+  }
 }
 
-// Process update to owner profile
+
+
 async function updateProfile(req, res) {
-    try {
-        const { firstName, lastName, email } = req.body;
+  try {
+      const userId = req.session.userId;
+      const user = await User.findById(userId);
 
-        // Assuming newPet._id is available in the scope, which typically shouldn't be the case in an update profile function
-        const updateObject = {
-            firstName,
-            lastName,
-            email
-        };
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
 
-        if (newPet && newPet._id) {
-            updateObject.$push = { pets: newPet._id };
-        }
+      const updates = {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+      };
 
-        await User.findByIdAndUpdate(req.session.userId, updateObject);
-        res.redirect('/dashboard');
-    } catch (error) {
-        console.error('Error updating user:', error);
-        res.status(500).send('An error occurred.');
-    }
+
+      if (req.body.newPassword && req.body.confirmNewPassword && req.body.currentPassword) {
+          if (!await user.correctPassword(req.body.currentPassword)) {
+              return res.status(400).send('Current password is incorrect');
+          }
+          if (req.body.newPassword !== req.body.confirmNewPassword) {
+              return res.status(400).send('New passwords do not match');
+          }
+    
+          updates.password = await bcrypt.hash(req.body.newPassword, 12);
+      }
+
+  
+      await User.findByIdAndUpdate(userId, updates);
+      res.redirect('/dashboard'); 
+  } catch (error) {
+      console.error('Error updating user profile:', error);
+      res.status(500).send('An error occurred.');
+  }
 }
 
 
-// Delete owner account
 async function deleteAccount(req, res) {
-    try {
-        await User.findByIdAndDelete(req.session.userId);
-        req.session.destroy(() => res.redirect('/login'));
-    } catch (error) {
-        console.error('Error deleting user:', error);
-        res.status(500).send('An error occurred.');
-    }
+  console.log("deleteAccount function called");
+  try {
+      await User.findByIdAndDelete(req.session.userId);
+      req.session.destroy(() => res.redirect('/login'));
+  } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).send('An error occurred.');
+  }
 }
 
-// Display form to add a new pet
+
+
 async function addPet(req, res) {
     try {
       if (!req.session.userId) return res.redirect('/login');
@@ -128,7 +151,6 @@ async function addPet(req, res) {
   }
   
 
-// Process adding a new pet
 async function processAddPet(req, res) {
     try {
         console.log(`User ID from session: ${req.session.userId}`);
@@ -139,12 +161,11 @@ async function processAddPet(req, res) {
         const newPet = await Pet.create({
             name: petName,
             type: petType,
-            medicationHistory: petMedicalHistory, // Make sure this matches your schema
+            medicationHistory: petMedicalHistory, 
             photoUrl: petPhoto,
             owner: req.session.userId
         });
 
-        // Update the owner's pet array with the new pet's ID
         await User.findByIdAndUpdate(req.session.userId, { $push: { pets: newPet._id } });
 
         console.log(`New pet created with ID: ${newPet._id}`);
@@ -155,9 +176,6 @@ async function processAddPet(req, res) {
     }
 }
 
-
-
-// Display form to edit an existing pet
 async function getEditPet(req, res) {
   try {
       const petId = req.params.petId;
@@ -185,7 +203,7 @@ async function updatePetInfo(req, res) {
     }
 
     await Pet.findByIdAndUpdate(petId, updateData);
-    res.redirect('/dashboard');  // Redirect to a page where you can see the update or confirm the update
+    res.redirect('/dashboard');  
   } catch (error) {
     console.error('Error updating pet info:', error);
     res.status(500).send('An error occurred while updating pet information.');
@@ -193,7 +211,6 @@ async function updatePetInfo(req, res) {
 }
 
 
-// Display a list of pets for the owner
 async function viewPets(req, res) {
   try {
       const userId = req.session.userId;
@@ -212,7 +229,6 @@ async function viewPets(req, res) {
 async function showPetDetails(req, res) {
   const petId = req.params.petId;
   const pet = await Pet.findById(petId);
-  // Error handling if pet not found...
   res.render('petDetails', { pet });
 }
 
@@ -224,22 +240,20 @@ async function deletePet(req, res) {
 
       console.log(`User ${userId} is trying to delete pet ${petId}`);
 
-      // Find the pet to ensure it exists and belongs to the user
+     
       const pet = await Pet.findOne({ _id: petId, owner: userId });
       if (!pet) {
           console.log("Pet not found or not owned by user");
           return res.status(404).send('Pet not found or not owned by user');
       }
 
-      // Delete the pet
       await Pet.deleteOne({ _id: petId });
       console.log(`Pet ${petId} deleted successfully`);
 
-      // Remove the pet reference from the user's 'pets' array
+      
       await User.findByIdAndUpdate(userId, { $pull: { pets: petId } });
       console.log(`Pet reference removed from user ${userId}`);
 
-      // Redirect to the dashboard
       res.redirect('/dashboard');
   } catch (error) {
       console.error('Error deleting pet:', error);
@@ -260,6 +274,7 @@ module.exports = {
     viewPets,
     showPetDetails,
     deletePet,
-    completeOwnerInfo, // Add this line
+    completeOwnerInfo, 
+    getOwnerProfile,
   };
   

@@ -20,6 +20,9 @@ router.post('/logout', authController.logout);
 // Sitter-specific routes
 router.get('/sitter/register', sitterController.getSitterRegister);
 router.post('/sitter/register', sitterController.postSitterRegister);
+router.get('/sitter/profile', ensureAuthenticated, sitterController.getSitterProfile);
+router.post('/sitter/profile', ensureAuthenticated, upload.single('profilePhoto'), sitterController.updateSitterProfile);
+router.delete('/sitter/profile/delete', ensureAuthenticated, sitterController.deleteAccount);
 router.get('/sitter/complete-info', ensureAuthenticatedSitter, sitterController.getCompleteSitterInfo);
 router.post('/sitter/complete-info', ensureAuthenticatedSitter, upload.single('profilePhoto'), sitterController.postCompleteSitterInfo);
 
@@ -27,8 +30,9 @@ router.post('/sitter/complete-info', ensureAuthenticatedSitter, upload.single('p
 router.get('/owner/addPet', ensureAuthenticatedOwner, ownerController.addPet);
 router.post('/owner/addPet', ensureAuthenticatedOwner, upload.single('petPhoto'), ownerController.processAddPet);
 router.get('/owner/viewPets', ensureAuthenticatedOwner, ownerController.viewPets);
-router.get('/profile/edit', ensureAuthenticated, ownerController.getEditProfile);
-router.post('/profile/edit', ensureAuthenticated, ownerController.updateProfile);
+router.get('/owner/profile', ensureAuthenticated, ownerController.getOwnerProfile);
+router.get('/owner/profile', ensureAuthenticated, ensureAuthenticatedOwner, ownerController.getEditProfile);
+router.post('/owner/profile', ensureAuthenticated, ensureAuthenticatedOwner, ownerController.updateProfile);
 router.delete('/profile/delete', ensureAuthenticated, ownerController.deleteAccount);
 router.get('/completeOwnerInfo', ensureAuthenticatedOwner, ownerController.completeOwnerInfo);
 router.post('/submitOwnerInfo', ensureAuthenticatedOwner, upload.fields([

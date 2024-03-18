@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="/css/styles.css"> <!-- Update this path as needed -->
+</head>
+<body>
+  <%- include('../partials/header') %>
+
+  <h1>Edit Profile</h1>
+  <form action="/owner/profile" method="post">
+    <!-- Method Override to support PUT request on forms -->
+    <input type="hidden" name="_method" value="PUT">
+  
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>" required>
+  
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName" value="<%= user.lastName %>" required>
+  
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="<%= user.email %>" required>
+  
+    <h2>Change Password</h2>
+    <label for="currentPassword">Current Password:</label>
+    <input type="password" id="currentPassword" name="currentPassword">
+  
+    <label for="newPassword">New Password:</label>
+    <input type="password" id="newPassword" name="newPassword">
+  
+    <label for="confirmNewPassword">Confirm New Password:</label>
+    <input type="password" id="confirmNewPassword" name="confirmNewPassword">
+  
+    <button type="submit">Update Profile</button>
+  </form>
+
+  <!-- Delete account form -->
+  <form action="/profile/delete" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+    <input type="hidden" name="_method" value="DELETE">
+    <button type="submit" class="delete-button">Delete Account</button>
+  </form>
+  
+</body>
+</html>

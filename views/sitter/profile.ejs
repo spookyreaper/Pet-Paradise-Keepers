@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/styles.css">
+  <title>Edit Sitter Profile</title>
+</head>
+<body>
+  <%- include('../partials/header') %> 
+
+  <h1>Edit Profile</h1>
+  <form action="/sitter/profile" method="post" enctype="multipart/form-data">
+    <!-- Method Override to support PUT request on forms -->
+    <input type="hidden" name="_method" value="PUT">
+  
+    <!-- Personal details -->
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>" required>
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName" value="<%= user.lastName %>" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="<%= user.email %>" required>
+
+
+    <label for="biography">Biography:</label>
+    <textarea id="biography" name="biography"><%= user.biography %></textarea>
+
+    <label for="experience">Experience:</label>
+    <input type="text" id="experience" name="experience" value="<%= user.experience %>">
+
+    <label for="rate">Rate:</label>
+    <input type="number" id="rate" name="rate" value="<%= user.rate %>">
+
+    <label for="profilePhoto">Profile Photo:</label>
+    <input type="file" id="profilePhoto" name="profilePhoto">
+
+
+    <h2>Change Password</h2>
+    <label for="currentPassword">Current Password:</label>
+    <input type="password" id="currentPassword" name="currentPassword">
+
+    <label for="newPassword">New Password:</label>
+    <input type="password" id="newPassword" name="newPassword">
+
+    <label for="confirmNewPassword">Confirm New Password:</label>
+    <input type="password" id="confirmNewPassword" name="confirmNewPassword">
+
+    <button type="submit">Update Profile</button>
+  </form>
+  
+  <form action="/sitter/profile/delete" method="post">
+    <input type="hidden" name="_method" value="DELETE">
+    <button type="submit" class="delete-account-btn">Delete Account</button>
+  </form>
+  
+
+  <%- include('../partials/footer') %> 
+</body>
+</html>
