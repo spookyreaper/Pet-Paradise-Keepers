@@ -5,9 +5,9 @@ const authController = require('../controllers/authController');
 const ownerController = require('../controllers/ownerController');
 const sitterController = require('../controllers/sitterController');
 const ensureAuthenticated = require('../middlewares/ensureAuthenticated');
-const ensureAuthenticatedOwner = require('../middlewares/ensureAuthenticatedOwner'); // Import the owner middleware
-const ensureAuthenticatedSitter = require('../middlewares/ensureAuthenticatedSitter'); // Import the sitter middleware
-const upload = require('../middlewares/uploadConfig'); // Ensure this file exists and is configured correctly
+const ensureAuthenticatedOwner = require('../middlewares/ensureAuthenticatedOwner'); 
+const ensureAuthenticatedSitter = require('../middlewares/ensureAuthenticatedSitter'); 
+const upload = require('../middlewares/uploadConfig');
 
 // General routes
 router.get('/', homeController.getHomePage);

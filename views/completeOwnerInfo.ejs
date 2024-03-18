@@ -90,6 +90,9 @@ button:hover, button:focus {
 
 </style>
 <body>
+
+  <%- include('partials/header') %> 
+
   <div class="container">
     <h1>Complete Your Profile</h1>
     <form action="/submitOwnerInfo" method="POST" enctype="multipart/form-data">
@@ -117,5 +120,6 @@ button:hover, button:focus {
     </form>
   </div>
 </body>
+<img src="/background.jpeg" alt="Description of Image" class="background-image">
 </html>
 

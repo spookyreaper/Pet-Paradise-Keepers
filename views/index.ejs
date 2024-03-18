@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Pet Paradise</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Ensure the path to your CSS file is correct -->
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main class="container">
+        <section id="owner-section" class="form-group">
+            <h2>Are You a Pet Owner?</h2>
+            <p>Find the perfect sitter for your furry friend. Join now to connect with trusted pet sitters in your area.</p>
+            <button class="button" onclick="window.location.href='/register';">Join Now as Owner</button>
+        </section>
+        
+        <section id="sitter-section" class="form-group">
+            <h2>Want to Earn Money as a Pet Sitter?</h2>
+            <p>Join our community of pet lovers and start earning by providing care for pets in your neighborhood.</p>
+            <button class="button" onclick="window.location.href='/register';">Join Now as Sitter</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Pet Paradise. All rights reserved.</p>
+    </footer>
+</body>
+<img src="/background.jpeg" alt="Description of Image" class="background-image">
+
+</html>

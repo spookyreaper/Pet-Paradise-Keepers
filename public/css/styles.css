@@ -72,8 +72,8 @@ body, html {
     text-decoration: none;
     background: none;
     border: none;
-    width: 100%; /* Ensure full width */
-    text-align: left; /* Align text to the left */
+    width: 100%; 
+    text-align: left; 
   }
   
   .user-dropdown-menu .dropdown-item:hover,
@@ -411,3 +411,13 @@ button:focus, input:focus, textarea:focus {
     outline: 2px solid #007bff;
     outline-offset: 2px;
 }
+
+.background-image {
+    width: 100%; 
+    height: auto; 
+    display: block; 
+    margin: 0 auto; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
