@@ -2,7 +2,7 @@
 
 Pet Paradise Keepers is an modern platform designed to attach puppy proprietors with passionate pet sitters. This platform provides a consumer-friendly environment in which puppy owners can discover the appropriate sitter for his or her liked pets for diverse events. Similarly, people who love spending time with pets and need to earn cash can register as pet sitters.
 
-![Dashboard](/Pet-Paradise-Keepers/screenshots/homePage.png)
+![Dashboard](/screenshots/homePage.png)
 
 ## Key Features
 
