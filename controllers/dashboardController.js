@@ -1,5 +1,3 @@
-const User = require('../models/accountSchema');
-
 async function getDashboard(req, res) {
   try {
     const userId = req.session.userId;
@@ -7,19 +5,17 @@ async function getDashboard(req, res) {
       return res.redirect('/login');
     }
 
-    const user = await User.findById(userId);
+    // Re-fetch the user from the database and populate the pets field
+    const user = await User.findById(userId).populate('pets');
     if (!user) {
       console.error('User not found');
-      return res.status(404).render('error', { error: 'User not found' });
+      return res.status(404).send("User not found");
     }
 
+    // Render the dashboard view with the updated user data
     res.render('dashboard', { user: user });
   } catch (err) {
     console.error('Error fetching user from database:', err);
-    res.status(500).render('error', { error: 'Internal server error' });
+    res.status(500).send("Internal server error");
   }
 }
-
-module.exports = {
-  getDashboard,
-};

@@ -11,7 +11,8 @@
 
     <div class="container">
         <h1>Add Your Pet</h1>
-        <form action="/addPet" method="post" enctype="multipart/form-data">
+        <!-- Make sure the form action is pointing to the correct route -->
+        <form action="/owner/addPet" method="post" enctype="multipart/form-data">
             <div>
                 <label for="petName">Pet Name:</label>
                 <input type="text" id="petName" name="petName" required>

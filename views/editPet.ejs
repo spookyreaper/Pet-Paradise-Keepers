@@ -7,37 +7,38 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <%- include('partials/header') %>
+    <% include('partials/header') %>
 
     <h1>Edit Pet Information</h1>
 
     <form action="/pets/<%= pet._id %>/edit" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="_method" value="PUT">
-      <div>
-        <label for="name">Pet Name:</label>
-        <input type="text" id="name" name="name" value="<%= pet.name %>" required>
-      </div>
-      <div>
-        <label for="type">Pet Type:</label>
-        <input type="text" id="type" name="type" value="<%= pet.type %>" required>
-      </div>
-      <div>
-        <label for="medicalHistory">Medical History:</label>
-        <textarea id="medicalHistory" name="medicalHistory"><%= pet.medicalHistory %></textarea>
-      </div>
-      <div>
-        <label for="photo">Pet Photo:</label>
-        <input type="file" id="photo" name="photo">
-        <% if (pet.photoUrl) { %>
-          <img src="/<%= pet.photoUrl %>" alt="Pet photo" width="100">
-        <% } %>
-      </div>
-      <button type="submit">Update Pet</button>
+        <input type="hidden" name="_method" value="PUT">
+        <div>
+            <label for="name">Pet Name:</label>
+            <input type="text" id="name" name="name" value="<%= pet.name %>" required>
+        </div>
+        <div>
+            <label for="type">Pet Type:</label>
+            <input type="text" id="type" name="type" value="<%= pet.type %>" required>
+        </div>
+        <div>
+            <label for="medicalHistory">Medical History:</label>
+            <textarea id="medicalHistory" name="medicalHistory"><%= pet.medicalHistory %></textarea>
+        </div>
+        <div>
+            <label for="photo">Pet Photo:</label>
+            <input type="file" id="photo" name="photo">
+            <% if (pet.photoUrl) { %>
+                <img src="/<%= pet.photoUrl %>" alt="Pet photo" width="100">
+            <% } %>
+        </div>
+        <button type="submit">Update Pet</button>
     </form>
 
-    <script>
-        // JavaScript for client-side validation or interactivity
-    </script>
-
+    <form action="/pets/<%= pet._id %>" method="post">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit">Delete Pet</button>
+    </form>
+    
 </body>
 </html>

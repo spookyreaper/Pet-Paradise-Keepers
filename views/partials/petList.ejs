@@ -1,23 +1,24 @@
-<!-- views/partials/petList.ejs -->
 <section>
-    <h2>Your Pets</h2>
-    <% if(user.pets && user.pets.length > 0) { %>
-      <ul>
-        <% user.pets.forEach(function(pet) { %>
-          <li>
-            <img src="<%= pet.photoUrl.replace('public/', '') %>" alt="Photo of <%= pet.name %>" class="pet-photo">
-            <div>
-              <h3><%= pet.name %></h3>
-              <p>Type: <%= pet.type %></p>
-              <p>Medical History: <%= pet.medicationHistory %></p>
-              <!-- Add the Edit Pet button here -->
-              <a href="/pets/<%= pet._id %>/edit" class="edit-pet-button">Edit Pet</a>
-            </div>
-          </li>
-        <% }); %>
-      </ul>        
-    <% } else { %>
-      <p>You have not added any pets yet.</p>
-    <% } %>
-  </section>
-  
+  <h2>Your Pets</h2>
+  <% if(user.pets && user.pets.length > 0) { %>
+    <ul>
+      <% user.pets.forEach(function(pet) { %>
+        <li>
+          <% if(pet.photoUrl) { %>
+            <img src="<%= pet.photoUrl.startsWith('public/') ? pet.photoUrl.replace('public/', '') : pet.photoUrl %>" alt="Photo of <%= pet.name %>" class="pet-photo" onerror="this.onerror=null; this.src='/images/default.png';">
+          <% } else { %>
+            <img src="/images/default.png" alt="Default image" class="pet-photo">
+          <% } %>
+          <div>
+            <h3><%= pet.name %></h3>
+            <p>Type: <%= pet.type %></p>
+            <p>Medical History: <%= pet.medicationHistory %></p>
+            <a href="/pets/<%= pet._id %>/edit" class="edit-pet-button">Edit Pet</a>
+          </div>
+        </li>
+      <% }); %>
+    </ul>        
+  <% } else { %>
+    <p>You have not added any pets yet.</p>
+  <% } %>
+</section>

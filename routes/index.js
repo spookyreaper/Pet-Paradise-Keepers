@@ -4,61 +4,10 @@ const homeController = require('../controllers/homeController');
 const authController = require('../controllers/authController');
 const ownerController = require('../controllers/ownerController');
 const sitterController = require('../controllers/sitterController');
-const { addPet, viewPets, updatePetInfo, getEditPet } = ownerController;
 const ensureAuthenticated = require('../middlewares/ensureAuthenticated');
-const Pet = require('../models/Pet');
-const User = require('../models/accountSchema');
-const fs = require('fs');
-const multer = require('multer');
-const path = require('path');
-
-
-// Middleware for checking if the user is authenticated as an owner
-function ensureAuthenticatedOwner(req, res, next) {
-  if (req.session.userId && req.session.role === 'owner') {
-    next();
-  } else {
-    res.redirect('/login');
-  }
-}
-
-// Middleware for checking if the user is authenticated as a sitter
-function ensureAuthenticatedSitter(req, res, next) {
-  if (req.session.userId && req.session.role === 'sitter') {
-    next();
-  } else {
-    res.redirect('/login');
-  }
-}
-
-// Configuration for file uploads
-const storage = multer.diskStorage({
-  destination: function(req, file, callback) {
-    let dir;
-    
-    if (req.session.role === 'owner') {
-      const ownerId = req.session.userId;
-      dir = `public/uploads/owners/${ownerId}/pets`;
-    } else if (req.session.role === 'sitter') {
-      const sitterId = req.session.userId;
-      dir = `public/uploads/sitters/${sitterId}`;
-    }
-
-    fs.exists(dir, exist => {
-      if (!exist) {
-        return fs.mkdir(dir, { recursive: true }, error => callback(error, dir));
-      }
-      return callback(null, dir);
-    });
-  },
-  filename: function(req, file, callback) {
-    const filename = `${Date.now()}${path.extname(file.originalname)}`;
-    callback(null, filename);
-  }
-});
-
-const upload = multer({ storage: storage });
-
+const ensureAuthenticatedOwner = require('../middlewares/ensureAuthenticatedOwner'); // Import the owner middleware
+const ensureAuthenticatedSitter = require('../middlewares/ensureAuthenticatedSitter'); // Import the sitter middleware
+const upload = require('../middlewares/uploadConfig'); // Ensure this file exists and is configured correctly
 
 // General routes
 router.get('/', homeController.getHomePage);
@@ -68,32 +17,30 @@ router.post('/login', authController.postLogin);
 router.post('/register', authController.postRegister);
 router.post('/logout', authController.logout);
 
-
-
 // Sitter-specific routes
-router.get('/sitter/register', (req, res) => {
-  sitterController.getSitterRegister(req, res);
-});
-router.post('/sitter/register', (req, res) => {
-  sitterController.postSitterRegister(req, res);
-});
+router.get('/sitter/register', sitterController.getSitterRegister);
+router.post('/sitter/register', sitterController.postSitterRegister);
 router.get('/sitter/complete-info', ensureAuthenticatedSitter, sitterController.getCompleteSitterInfo);
 router.post('/sitter/complete-info', ensureAuthenticatedSitter, upload.single('profilePhoto'), sitterController.postCompleteSitterInfo);
 
 // Owner-specific routes
-router.get('/owner/addPet', ensureAuthenticated, ownerController.addPet);
-router.post('/owner/addPet', ensureAuthenticated, ownerController.processAddPet);
-router.get('/owner/viewPets', ensureAuthenticated, ownerController.viewPets);
-router.get('/pets/:petId', ensureAuthenticated, ownerController.showPetDetails);
-router.get('/pets/:petId/edit', ensureAuthenticated, ownerController.getEditPet);
-router.post('/pets/:petId/edit', ensureAuthenticated, upload.single('photo'), ownerController.updatePetInfo);
-router.get('/completeOwnerInfo', ensureAuthenticatedOwner, (req, res) => {
-  res.render('completeOwnerInfo', { user: req.user });
-});
+router.get('/owner/addPet', ensureAuthenticatedOwner, ownerController.addPet);
+router.post('/owner/addPet', ensureAuthenticatedOwner, upload.single('petPhoto'), ownerController.processAddPet);
+router.get('/owner/viewPets', ensureAuthenticatedOwner, ownerController.viewPets);
+router.get('/profile/edit', ensureAuthenticated, ownerController.getEditProfile);
+router.post('/profile/edit', ensureAuthenticated, ownerController.updateProfile);
+router.delete('/profile/delete', ensureAuthenticated, ownerController.deleteAccount);
+router.get('/completeOwnerInfo', ensureAuthenticatedOwner, ownerController.completeOwnerInfo);
 router.post('/submitOwnerInfo', ensureAuthenticatedOwner, upload.fields([
   { name: 'petPhoto', maxCount: 1 },
   { name: 'ownerPhoto', maxCount: 1 }
 ]), ownerController.submitOwnerInfo);
 
+
+// Pet routes
+router.get('/pets/:petId', ensureAuthenticatedOwner, ownerController.showPetDetails);
+router.get('/pets/:petId/edit', ensureAuthenticatedOwner, ownerController.getEditPet);
+router.post('/pets/:petId/edit', ensureAuthenticatedOwner, upload.single('photo'), ownerController.updatePetInfo);
+router.delete('/pets/:petId', ensureAuthenticatedOwner, ownerController.deletePet);
 
 module.exports = router;
