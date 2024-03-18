@@ -160,21 +160,6 @@ async function deleteAccount(req, res) {
   }
 }
 
-
-async function deleteAccount(req, res) {
-  try {
-    const user = await User.findById(req.session.userId);
-    if (!user || user.role !== 'sitter') {
-      return res.status(403).send('Access denied');
-    }
-
-    await User.findByIdAndDelete(req.session.userId);
-    req.session.destroy(() => res.redirect('/login')); // Redirect to home or login page
-  } catch (error) {
-    console.error('Error deleting sitter account:', error);
-    res.status(500).send('An error occurred.');
-  }
-}
 module.exports = {
   getSitterRegister,
   postSitterRegister,
