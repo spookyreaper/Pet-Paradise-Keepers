@@ -1,0 +1,20 @@
+<% const icons = {
+  paw: '<ellipse cx="7" cy="7" rx="2.2" ry="2.8" transform="rotate(-25 7 7)"/><ellipse cx="17" cy="7" rx="2.2" ry="2.8" transform="rotate(25 17 7)"/><ellipse cx="3.5" cy="12" rx="1.8" ry="2.3" transform="rotate(-25 3.5 12)"/><ellipse cx="20.5" cy="12" rx="1.8" ry="2.3" transform="rotate(25 20.5 12)"/><path d="M12 12c-2.5 0-3 2-4.8 3.5-2.7 2.3-1.2 5 1.2 5 1.3 0 2.4-.8 3.6-.8s2.3.8 3.6.8c2.4 0 3.9-2.7 1.2-5C15 14 14.5 12 12 12Z"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  'arrow-right': '<path d="M5 12h14m-6-6 6 6-6 6"/>',
+  'arrow-left': '<path d="M19 12H5m6-6-6 6 6 6"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',
+  heart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0l-1 1-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
+  edit: '<path d="m16 3 5 5-12 12-6 1 1-6L16 3ZM13 6l5 5"/>',
+  camera: '<path d="M3 6h4l2-3h6l2 3h4v15H3V6Z"/><circle cx="12" cy="13" r="4"/>',
+  check: '<path d="m5 12 4 4L19 6"/>',
+  shield: '<path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  logout: '<path d="M9 4H4v16h5m4-12 4 4-4 4M8 12h13"/>',
+  search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
+  message: '<path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 10 10 0 0 1-4-.8L3 21l1.8-5.5a10 10 0 0 1-.8-4A8.5 8.5 0 0 1 12.5 3H13a8.5 8.5 0 0 1 8 8v.5Z"/><path d="M8 10h9M8 14h6"/>',
+  briefcase: '<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12a22 22 0 0 0 18 0M10 12h4v3h-4z"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 11h18M8 15h2M14 15h2"/>',
+  location: '<path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+}; %>
+<svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><%- icons[name] || icons.paw %></svg>

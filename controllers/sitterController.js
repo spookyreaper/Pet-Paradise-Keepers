@@ -1,162 +1,118 @@
 const Account = require('../models/accountSchema');
-const bcrypt = require('bcrypt'); 
-
+const Pet = require('../models/Pet');
+const { removeAccountMarketplaceData } = require('../utils/marketplaceCleanup');
+const authController = require('./authController');
+const { destroySession } = require('../utils/session');
+const { uploadedPhoto, discardUploads, removeStoredPhoto, removeAccountUploads } = require('../utils/upload');
+const { inputError, sitterInfo, assertProfileEmailAvailable, profileUpdates, formError } = require('../utils/profile');
 
 function getSitterRegister(req, res) {
-  
-  res.render('sitterRegister', { errorMessage: null });
+  return res.redirect('/register?role=sitter');
 }
 
-
-async function postSitterRegister(req, res) {
-  try {
-    const { email, password, firstName, lastName, biography, experience, rate } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 12); 
-
-
-    const newSitter = await Account.create({
-      email,
-      password: hashedPassword,
-      firstName,
-      lastName,
-      role: 'sitter', 
-      biography,
-      experience,
-      rate,
-    });
-
-    async function updateSitterProfile(req, res) {
-  try {
-    const updates = {
-      biography: req.body.biography,
-      experience: req.body.experience,
-      rate: req.body.rate,
-    };
-
-    if (req.file) {
-      updates.profilePhoto = req.file.path.replace('public/', '');
-    }
-
-    await Account.findByIdAndUpdate(req.session.userId, updates, { new: true });
-    res.redirect('/sitter/dashboard'); 
-  } catch (error) {
-    console.error('Error updating sitter profile:', error);
-    res.status(500).send('An error occurred while updating sitter profile.');
-  }
+function postSitterRegister(req, res, next) {
+  req.body = { ...req.body, role: 'sitter' };
+  return authController.postRegister(req, res, next);
 }
 
-   
+async function sitterAccount(req, res) {
+  if (!req.session || !req.session.userId) {
     res.redirect('/login');
+    return null;
+  }
+  const user = req.user || await Account.findById(req.session.userId);
+  if (!user) {
+    await destroySession(req, res);
+    res.redirect('/login');
+    return null;
+  }
+  if (user.role !== 'sitter') throw inputError('Access denied.', 403);
+  return user;
+}
+
+async function getSitterProfile(req, res, next) {
+  try {
+    const user = await sitterAccount(req, res);
+    if (user) return res.render('sitter/profile', { user, errorMessage: null });
   } catch (error) {
-    console.error('Error registering sitter:', error);
-    res.render('sitterRegister', { errorMessage: 'An error occurred during registration.' });
+    return next(error);
   }
 }
 
-async function getSitterProfile(req, res) {
+async function updateSitterProfile(req, res, next) {
+  let user;
+  let originalPhoto;
   try {
-    const user = await Account.findById(req.session.userId);
-    if (!user || user.role !== 'sitter') {
-      return res.status(403).send('Access denied');
-    }
-    res.render('sitter/profile', { user });
-  } catch (error) {
-    console.error('Error fetching sitter profile:', error);
-    res.status(500).send('An error occurred while fetching sitter profile.');
-  }
-}
-
-async function updateSitterProfile(req, res) {
-  try {
-    const userId = req.session.userId;
-    const user = await Account.findById(userId);
-
+    user = await sitterAccount(req, res);
     if (!user) {
-      return res.status(404).send('User not found');
+      await discardUploads(req);
+      return;
     }
-
-    const updates = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      biography: req.body.biography,
-      experience: req.body.experience,
-      rate: req.body.rate,
-    };
-
-    if (req.file) {
-      updates.profilePhoto = req.file.path.replace('public/', '');
-    }
-
-    if (req.body.currentPassword && req.body.newPassword && req.body.confirmNewPassword) {
-      const isMatch = await bcrypt.compare(req.body.currentPassword, user.password);
-      if (!isMatch) {
-        return res.status(400).send('Current password is incorrect');
-      }
-
-      if (req.body.newPassword !== req.body.confirmNewPassword) {
-        return res.status(400).send('New passwords do not match');
-      }
-
-      if (req.body.currentPassword === req.body.newPassword) {
-        return res.status(400).send('New password must be different from the current password');
-      }
-
-      updates.password = await bcrypt.hash(req.body.newPassword, 10);
-    }
-
-    await Account.findByIdAndUpdate(userId, updates, { new: true });
-    res.redirect('/sitter/dashboard'); 
+    const updates = await profileUpdates(user, req.body, true);
+    await assertProfileEmailAvailable(user, updates.email);
+    originalPhoto = user.profilePhoto;
+    if (req.file) updates.profilePhoto = uploadedPhoto(req.file);
+    Object.assign(user, updates);
+    await user.save();
+    if (req.file && user.profilePhoto !== originalPhoto) await removeStoredPhoto(originalPhoto);
+    return res.redirect('/dashboard');
   } catch (error) {
-    console.error('Error updating sitter profile:', error);
-    res.status(500).send('An error occurred while updating sitter profile.');
+    if (user && originalPhoto !== undefined) user.profilePhoto = originalPhoto;
+    return formError(req, res, next, error, 'sitter/profile', user);
   }
 }
 
-
-
-function getCompleteSitterInfo(req, res) {
-  const user = req.session.user;
-  res.render('completeSitterInfo', { user: user });
-}
-
-
-async function postCompleteSitterInfo(req, res) {
+async function getCompleteSitterInfo(req, res, next) {
   try {
-    const sitterId = req.session.userId;
-    const { biography, experience, rate } = req.body;
-    const profilePhoto = req.file ? req.file.path.replace('public/', '') : '';
-
-    await Account.findByIdAndUpdate(sitterId, {
-      biography,
-      experience,
-      rate,
-      profilePhoto,
-    }, { new: true });
-
-    res.redirect('/dashboard');
+    const user = await sitterAccount(req, res);
+    if (user) return res.render('completeSitterInfo', { user, errorMessage: null });
   } catch (error) {
-    console.error('Error updating sitter info:', error);
-    res.status(500).send('An error occurred while updating sitter information.');
+    return next(error);
   }
 }
 
-const User = require('../models/accountSchema'); 
-
-
-async function deleteAccount(req, res) {
+async function postCompleteSitterInfo(req, res, next) {
+  let user;
+  let originalPhoto;
   try {
-    
-    const user = await User.findById(req.session.userId);
-    if (!user || user.role !== 'sitter') {
-      return res.status(403).send('Access denied');
+    user = await sitterAccount(req, res);
+    if (!user) {
+      await discardUploads(req);
+      return;
     }
-
-    await User.findByIdAndDelete(req.session.userId);
-    req.session.destroy(() => res.redirect('/login')); 
+    const updates = sitterInfo(req.body, true);
+    originalPhoto = user.profilePhoto;
+    if (req.file) updates.profilePhoto = uploadedPhoto(req.file);
+    Object.assign(user, updates);
+    await user.save();
+    if (req.file && user.profilePhoto !== originalPhoto) await removeStoredPhoto(originalPhoto);
+    return res.redirect('/dashboard');
   } catch (error) {
-    console.error('Error deleting sitter account:', error);
-    res.status(500).send('An error occurred.');
+    if (user && originalPhoto !== undefined) user.profilePhoto = originalPhoto;
+    return formError(req, res, next, error, 'completeSitterInfo', user);
+  }
+}
+
+async function deleteAccount(req, res, next) {
+  try {
+    const user = await sitterAccount(req, res);
+    if (!user) return;
+    const deleted = await Account.findByIdAndDelete(user._id);
+    let cleanupError;
+    try {
+      if (deleted) {
+        await Pet.deleteMany({ owner: user._id });
+        await removeAccountMarketplaceData(user._id);
+      }
+    } catch (error) {
+      cleanupError = error;
+    }
+    if (deleted && !cleanupError) await removeAccountUploads(user);
+    await destroySession(req, res);
+    if (cleanupError) return next(cleanupError);
+    return res.redirect('/login');
+  } catch (error) {
+    return next(error);
   }
 }
 

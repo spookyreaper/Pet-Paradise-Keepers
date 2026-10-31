@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title><%= sitter.firstName %>'s sitter profile · Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%
+    const relativePhoto = typeof sitter.profilePhoto === 'string'
+      ? sitter.profilePhoto.replace(/^\/?public\//, '').replace(/^\/+/, '') : '';
+    const profilePhoto = relativePhoto.startsWith('uploads/') ? '/' + relativePhoto : '';
+  %>
+  <main class="page-shell page-shell-narrow" id="main-content">
+    <p><a class="text-link" href="/sitters"><%- include('../partials/icon', { name: 'arrow-left' }) %> Back to sitters</a></p>
+    <section class="marketplace-card">
+      <div class="page-header">
+        <div class="marketplace-person">
+          <% if (profilePhoto) { %>
+            <img class="marketplace-avatar" src="<%= profilePhoto %>" alt="Profile photo of <%= sitter.firstName %>">
+          <% } else { %>
+            <span class="marketplace-avatar icon-badge" aria-hidden="true"><%= (sitter.firstName || '').slice(0, 1) %><%= (sitter.lastName || '').slice(0, 1) %></span>
+          <% } %>
+          <div>
+            <p class="eyebrow">Meet your pet sitter</p>
+            <h1><%= sitter.firstName %> <%= sitter.lastName %></h1>
+          </div>
+        </div>
+        <p class="rate-tag">$<%= Number(sitter.rate || 0).toFixed(2) %><small>/hour</small></p>
+      </div>
+      <div class="details-grid">
+        <section class="details-card">
+          <span class="icon-badge"><%- include('../partials/icon', { name: 'heart' }) %></span>
+          <h2>About me</h2>
+          <p class="preserve-lines"><%= sitter.biography || 'This sitter has not added a biography yet.' %></p>
+        </section>
+        <section class="details-card">
+          <span class="icon-badge"><%- include('../partials/icon', { name: 'shield' }) %></span>
+          <h2>Pet care experience</h2>
+          <p class="preserve-lines"><%= sitter.experience || 'This sitter has not added their experience yet.' %></p>
+        </section>
+      </div>
+      <div class="form-actions">
+        <a class="button button-primary" href="/sitters/<%= sitter._id %>/request">Request an interview <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+        <a class="button button-secondary" href="/messages/new?recipient=<%= sitter._id %>"><%- include('../partials/icon', { name: 'message' }) %> Send a message</a>
+      </div>
+      <p class="field-help">Introduce your pet, ask questions, and discuss the rate in your request or private messages.</p>
+    </section>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

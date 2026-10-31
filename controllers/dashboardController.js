@@ -1,21 +1,22 @@
-async function getDashboard(req, res) {
+const User = require('../models/accountSchema');
+const { destroySession } = require('../utils/session');
+const { inputError } = require('../utils/profile');
+
+async function getDashboard(req, res, next) {
   try {
-    const userId = req.session.userId;
-    if (!userId) {
+    if (!req.session || !req.session.userId) return res.redirect('/login');
+    const user = await User.findById(req.session.userId).populate('pets');
+    if (!user) {
+      await destroySession(req, res);
       return res.redirect('/login');
     }
-
-    
-    const user = await User.findById(userId).populate('pets');
-    if (!user) {
-      console.error('User not found');
-      return res.status(404).send("User not found");
+    if (user.role !== 'owner' && user.role !== 'sitter') {
+      throw inputError('Access denied.', 403);
     }
-
-   
-    res.render('dashboard', { user: user });
-  } catch (err) {
-    console.error('Error fetching user from database:', err);
-    res.status(500).send("Internal server error");
+    return res.render(`${user.role}/dashboard`, { user, dashboardType: user.role });
+  } catch (error) {
+    return next(error);
   }
 }
+
+module.exports = { getDashboard };

@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+!.env.example
+public/uploads/
+.DS_Store
+.local/
+!.gitignore
+!package-lock.json

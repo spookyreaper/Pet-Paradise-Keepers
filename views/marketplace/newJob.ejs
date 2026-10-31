@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title><%= typeof job !== 'undefined' && job ? 'Edit sitting job' : 'Post a sitting job' %> · Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <% const editing = typeof job !== 'undefined' && Boolean(job); %>
+  <% const selectedPetId = String(editing ? (job.pet && job.pet._id || job.pet || values.petId || '') : (values.petId || '')); %>
+  <main class="page-shell page-shell-narrow" id="main-content">
+    <p><a href="/jobs" class="text-link"><%- include('../partials/icon', { name: 'arrow-left' }) %> Back to my sitting jobs</a></p>
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Make room for a helping hand</p>
+        <h1><%= editing ? 'Edit your sitting job' : 'Post a sitting job' %></h1>
+        <p class="muted">Tell sitters when you need care, what to expect, and the hourly rate you are offering.</p>
+      </div>
+    </div>
+
+    <% if (errorMessage) { %><div class="alert" id="job-error" role="alert"><%= errorMessage %></div><% } %>
+
+    <% if (!pets.length) { %>
+      <section class="empty-state">
+        <span class="icon-badge"><%- include('../partials/icon', { name: 'paw' }) %></span>
+        <h2>Start with a pet profile.</h2>
+        <p>Add your pet so you can choose them for your sitting job.</p>
+        <a href="/pets/add" class="button button-primary"><%- include('../partials/icon', { name: 'plus' }) %> Add a pet</a>
+      </section>
+    <% } else { %>
+      <form class="form-card" action="<%= action %>" method="post"<% if (errorMessage) { %> aria-describedby="job-error"<% } %>>
+        <section class="form-section">
+          <h2>The pet and the plan</h2>
+          <div class="form-group">
+            <label for="petId">Who needs sitting care?</label>
+            <% if (editing) { %><input type="hidden" name="petId" value="<%= selectedPetId %>"><% } %>
+            <select id="petId" name="petId" required<% if (editing) { %> disabled<% } %> aria-describedby="pet-sharing-help<%= editing ? ' pet-edit-help' : '' %>">
+              <option value="">Choose your pet</option>
+              <% pets.forEach(pet => { %><option value="<%= pet._id %>" <%= selectedPetId === String(pet._id) ? 'selected' : '' %>><%= pet.name %> · <%= pet.type %></option><% }); %>
+            </select>
+            <p class="field-help" id="pet-sharing-help">Sitters can see this pet's name, type, and photo, plus the listing details you add here. Your pet's private medical history is not shared automatically.</p>
+            <% if (editing) { %><p class="field-help" id="pet-edit-help">This listing keeps its original pet for existing requests. Post a new job to choose a different pet.</p><% } %>
+          </div>
+          <div class="form-group">
+            <label for="title">Job title</label>
+            <input id="title" name="title" type="text" maxlength="120" required value="<%= values.title || '' %>" placeholder="A weekend of care for Mochi">
+          </div>
+          <div class="form-group">
+            <label for="description">Care details to share</label>
+            <textarea id="description" name="description" maxlength="3000" required aria-describedby="description-help" placeholder="What will the sitter need to know about this job?"><%= values.description || '' %></textarea>
+            <p class="field-help" id="description-help">Describe the care you need and any expectations you want to share with sitters.</p>
+          </div>
+          <div class="form-group">
+            <label for="location">Location <span class="muted">(optional)</span></label>
+            <input id="location" name="location" type="text" maxlength="120" value="<%= values.location || '' %>" placeholder="City or neighborhood">
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h2>When and how much</h2>
+          <p class="field-help" id="date-help">Enter dates and times in Eastern time (America/New_York).</p>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="startDate">Starts</label>
+              <input id="startDate" name="startDate" type="datetime-local" required aria-describedby="date-help" value="<%= values.startDate || '' %>">
+            </div>
+            <div class="form-group">
+              <label for="endDate">Ends</label>
+              <input id="endDate" name="endDate" type="datetime-local" required aria-describedby="date-help" value="<%= values.endDate || '' %>">
+            </div>
+            <div class="form-group form-group-full">
+              <label for="budget">Offered hourly rate ($)</label>
+              <input id="budget" name="budget" type="number" min="0" max="10000" step="0.01" required aria-describedby="budget-help" value="<%= values.budget ?? '' %>" placeholder="25.00">
+              <p class="field-help" id="budget-help">This is your starting offer. You and the sitter can discuss a rate through requests and messages.</p>
+            </div>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <button class="button button-primary" type="submit"><%= editing ? 'Save listing' : 'Publish sitting job' %> <%- include('../partials/icon', { name: 'arrow-right' }) %></button>
+          <a class="button button-ghost" href="<%= editing ? '/jobs/' + job._id : '/jobs' %>">Cancel</a>
+        </div>
+      </form>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

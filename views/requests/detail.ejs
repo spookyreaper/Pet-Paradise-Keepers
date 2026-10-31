@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Details | Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main class="page-shell" id="main-content">
+    <% const requestId = value => String(value && value._id || value || ''); const ownOffer = requestId(careRequest.offerBy) === requestId(user); const canWithdraw = requestId(careRequest.initiatedBy) === requestId(user); const pending = careRequest.status === 'pending'; const offerParticipant = ownOffer ? user : otherParticipant; const jobUnavailable = careRequest.kind === 'job' && (!careRequest.job || careRequest.job.status !== 'open' || new Date(careRequest.job.endDate).getTime() <= Date.now()); const canNegotiate = pending && !jobUnavailable; %>
+    <div class="page-header">
+      <div>
+        <p class="eyebrow"><%= careRequest.kind === 'job' ? 'Sitting job request' : 'Interview request' %></p>
+        <h1><%= careRequest.job ? careRequest.job.title : (careRequest.pet ? 'Care for ' + careRequest.pet.name : 'Pet care request') %></h1>
+        <p class="muted">With <%= otherParticipant ? otherParticipant.firstName + ' ' + otherParticipant.lastName : 'a former participant' %></p>
+      </div>
+      <div class="form-actions">
+        <a href="/requests" class="button button-ghost button-small"><%- include('../partials/icon', { name: 'arrow-left' }) %> All requests</a>
+        <% if (otherParticipant) { %><a href="/messages/new?recipient=<%= otherParticipant._id %>" class="button button-secondary">Send a message</a><% } %>
+      </div>
+    </div>
+
+    <% if (errorMessage) { %><div class="alert" role="alert"><%= errorMessage %></div><% } %>
+    <% if (pending && jobUnavailable) { %><div class="alert">This job listing is closed or has ended. You can still decline or withdraw this request, or continue the conversation in messages.</div><% } %>
+
+    <div class="details-grid">
+      <section class="details-card">
+        <div class="request-card-top"><span class="badge"><%= careRequest.status %></span><% if (careRequest.pet) { %><span class="badge"><%= careRequest.pet.name %> · <%= careRequest.pet.type %></span><% } %></div>
+        <h2><%= careRequest.status === 'accepted' ? 'Agreed hourly rate' : 'Latest hourly offer' %></h2>
+        <p class="request-offer">$<%= Number(careRequest.proposedRate).toFixed(2) %><span class="muted">/hr</span></p>
+        <p class="muted">Offered by <%= ownOffer ? 'you' : offerParticipant ? offerParticipant.firstName : 'a former participant' %>.</p>
+        <% if (careRequest.message) { %><h3>Initial request</h3><p class="preserve-lines"><%= careRequest.message %></p><% } %>
+        <% if (careRequest.job) { %><p class="field-help"><%= careRequest.job.location %> · <a href="/jobs/<%= careRequest.job._id %>">View sitting job</a></p><% } %>
+        <p class="field-help">This agreement coordinates care. No payment is collected here.</p>
+
+        <% if (pending) { %>
+          <% if (!ownOffer) { %>
+            <form action="/requests/<%= careRequest._id %>/respond" method="post" class="request-actions">
+              <input type="hidden" name="expectedVersion" value="<%= careRequest.__v %>">
+              <% if (canNegotiate) { %><button type="submit" name="action" value="accept" class="button button-primary">Accept $<%= Number(careRequest.proposedRate).toFixed(2) %>/hr</button><% } %>
+              <button type="submit" name="action" value="decline" class="button button-secondary">Decline</button>
+            </form>
+          <% } else if (canNegotiate) { %><p class="field-help">Waiting for the other person to respond. You can update your offer below.</p><% } %>
+          <% if (canWithdraw) { %>
+            <form action="/requests/<%= careRequest._id %>/respond" method="post" class="request-actions">
+              <input type="hidden" name="expectedVersion" value="<%= careRequest.__v %>">
+              <button type="submit" name="action" value="withdraw" class="button button-ghost button-small">Withdraw request</button>
+            </form>
+          <% } %>
+        <% } else { %><p class="field-help">This request is <%= careRequest.status %>. <% if (otherParticipant) { %>You can continue the conversation in messages.<% } %></p><% } %>
+      </section>
+
+      <% if (canNegotiate) { %>
+        <form class="form-card" action="/requests/<%= careRequest._id %>/offers" method="post">
+          <input type="hidden" name="expectedVersion" value="<%= careRequest.__v %>">
+          <h2><%= ownOffer ? 'Update your offer' : 'Suggest another rate' %></h2>
+          <p class="muted">Find an hourly rate that works for both of you.</p>
+          <div class="form-group">
+            <label for="proposedRate">Your hourly offer ($/hr)</label>
+            <input id="proposedRate" name="proposedRate" type="number" min="0" max="10000" step="0.01" value="<%= values.proposedRate ?? careRequest.proposedRate %>" required>
+          </div>
+          <div class="form-group">
+            <label for="message">A note with your offer <span class="muted">(optional)</span></label>
+            <textarea id="message" name="message" rows="4" maxlength="2000" placeholder="Share what works for you."><%= values.message || '' %></textarea>
+          </div>
+          <div class="form-actions"><button class="button button-primary" type="submit">Send offer <%- include('../partials/icon', { name: 'arrow-right' }) %></button></div>
+        </form>
+      <% } %>
+    </div>
+
+    <section class="details-card form-section">
+      <h2>The conversation so far</h2>
+      <ol class="negotiation-history">
+        <% careRequest.history.forEach(event => { %>
+          <li class="negotiation-event">
+            <div class="request-card-top"><strong><%= event.actor ? event.actor.firstName + ' ' + event.actor.lastName : 'Former participant' %></strong><span class="muted"><%= new Date(event.at).toLocaleString('en-US', { timeZone: 'America/New_York' }) %> ET</span></div>
+            <p><%= { created: 'Sent the request', offer: 'Proposed a new offer', accepted: 'Accepted the offer', declined: 'Declined the offer', withdrawn: 'Withdrew the request' }[event.action] %><% if (event.rate !== undefined && event.rate !== null) { %> · <strong>$<%= Number(event.rate).toFixed(2) %>/hr</strong><% } %></p>
+            <% if (event.message) { %><p class="preserve-lines"><%= event.message %></p><% } %>
+          </li>
+        <% }); %>
+      </ol>
+    </section>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

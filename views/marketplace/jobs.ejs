@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title><%= user.role === 'owner' ? 'My sitting jobs' : 'Find sitting jobs' %> · Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%
+    const ownerView = user.role === 'owner';
+    const listings = ownerView && typeof ownJobs !== 'undefined' && Array.isArray(ownJobs)
+      ? ownJobs : (Array.isArray(jobs) ? jobs : []);
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+      timeZone: 'America/New_York', timeZoneName: 'short',
+    });
+    const formatDate = value => {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? 'Not specified' : dateFormatter.format(date);
+    };
+    const photoUrl = value => {
+      if (typeof value !== 'string') return '';
+      const relative = value.replace(/^\/?public\//, '').replace(/^\/+/, '');
+      return relative.startsWith('uploads/') ? '/' + relative : '';
+    };
+  %>
+  <main class="page-shell" id="main-content">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Care worth connecting over</p>
+        <h1><%= ownerView ? 'My sitting jobs' : 'Find sitting jobs' %></h1>
+        <p class="muted"><%= ownerView ? 'Share the care you need, then talk with sitters to find a good fit.' : 'Find a pet care opportunity, introduce yourself, and propose a rate.' %></p>
+      </div>
+      <% if (ownerView) { %>
+        <a href="/jobs/new" class="button button-primary"><%- include('../partials/icon', { name: 'plus' }) %> Post a sitting job</a>
+      <% } else { %>
+        <a href="/requests" class="button button-secondary">My requests <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+      <% } %>
+    </div>
+
+    <% if (listings.length) { %>
+      <p class="field-help">Dates and times are shown in Eastern time.</p>
+      <div class="marketplace-grid">
+        <% listings.forEach(listing => { const pet = listing.pet || {}; const owner = listing.owner || {}; const photo = photoUrl(pet.photoUrl); const acceptingRequests = listing.status === 'open' && new Date(listing.endDate).getTime() > Date.now(); %>
+          <article class="marketplace-card">
+            <div class="marketplace-person">
+              <% if (photo) { %>
+                <img class="marketplace-avatar" src="<%= photo %>" alt="Photo of <%= pet.name || 'the pet' %>">
+              <% } else { %>
+                <span class="marketplace-avatar icon-badge" aria-hidden="true"><%- include('../partials/icon', { name: 'paw' }) %></span>
+              <% } %>
+              <div>
+                <p class="eyebrow"><%= pet.type || 'Pet care' %></p>
+                <h2><a href="/jobs/<%= listing._id %>"><%= listing.title %></a></h2>
+                <p class="muted"><%= pet.name || 'Pet profile unavailable' %><% if (!ownerView) { %> · Posted by <%= owner.firstName || 'Pet owner' %><% } %></p>
+              </div>
+            </div>
+            <div class="listing-actions">
+              <span class="rate-tag">$<%= Number(listing.budget).toFixed(2) %><small>/hour offered</small></span>
+              <span class="job-status <%= acceptingRequests ? 'job-status-open' : 'job-status-closed' %>"><%= listing.status === 'closed' ? 'Closed' : (acceptingRequests ? 'Open' : 'Ended') %></span>
+            </div>
+            <p class="muted"><%= (listing.description || '').slice(0, 180) %><%= (listing.description || '').length > 180 ? '…' : '' %></p>
+            <ul class="listing-meta">
+              <% if (listing.location) { %><li><%- include('../partials/icon', { name: 'location' }) %> <span><%= listing.location %></span></li><% } %>
+              <li><%- include('../partials/icon', { name: 'calendar' }) %> <span>Starts <%= formatDate(listing.startDate) %></span></li>
+              <li><%- include('../partials/icon', { name: 'clock' }) %> <span>Ends <%= formatDate(listing.endDate) %></span></li>
+            </ul>
+            <div class="listing-actions">
+              <a href="/jobs/<%= listing._id %>" class="button button-secondary button-small">View job <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+              <% if (ownerView && listing.status === 'open') { %><a href="/jobs/<%= listing._id %>/edit" class="text-link">Edit listing</a><% } %>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <section class="empty-state">
+        <span class="icon-badge"><%- include('../partials/icon', { name: 'briefcase' }) %></span>
+        <h2><%= ownerView ? 'Make room for a helping hand.' : 'Nothing open just yet.' %></h2>
+        <p><%= ownerView ? 'Post when you need sitting care. You choose the pet and the details you share with sitters.' : 'New listings will appear here as owners post sitting jobs.' %></p>
+        <a href="<%= ownerView ? '/jobs/new' : '/sitter/profile' %>" class="button button-primary"><%= ownerView ? 'Post my first job' : 'Review my sitter profile' %> <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+      </section>
+    <% } %>
+
+    <% if (typeof pagination !== 'undefined' && pagination.pages > 1) { %>
+      <nav class="pagination" aria-label="Sitting job pages">
+        <% if (pagination.previous) { %><a class="button button-secondary button-small" href="<%= pagination.previous %>"><%- include('../partials/icon', { name: 'arrow-left' }) %> Previous</a><% } %>
+        <span class="muted">Page <%= pagination.page %> of <%= pagination.pages %></span>
+        <% if (pagination.next) { %><a class="button button-secondary button-small" href="<%= pagination.next %>">Next <%- include('../partials/icon', { name: 'arrow-right' }) %></a><% } %>
+      </nav>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

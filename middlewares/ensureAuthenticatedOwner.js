@@ -1,10 +1,12 @@
+const ensureAuthenticated = require('./ensureAuthenticated');
+
 function ensureAuthenticatedOwner(req, res, next) {
-    if (req.session.userId && req.session.role === 'owner') {
-      next();
-    } else {
-      res.redirect('/login');
-    }
-  }
-  
-  module.exports = ensureAuthenticatedOwner;
+  return ensureAuthenticated(req, res, error => {
+    if (error) return next(error);
+    if (req.user.role !== 'owner') return res.status(403).send('Access denied');
+    return next();
+  });
+}
+
+module.exports = ensureAuthenticatedOwner;
   

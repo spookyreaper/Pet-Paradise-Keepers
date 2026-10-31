@@ -1,117 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login</title>
-  <style>
-   body {
-    font-family: Arial, sans-serif;
-    background: #eaeaea; 
-    padding: 40px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    min-height: 100vh; 
-    margin: 0; 
-}
-
-.login-container {
-    background: white;
-    padding: 30px;
-    width: 100%; 
-    max-width: 350px; 
-    margin: 20px; 
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    border: 1px solid #ccc; 
-}
-
-label {
-    display: block;
-    margin-bottom: 10px; 
-    font-size: 16px; 
-}
-
-input[type="text"],
-input[type="password"] {
-    width: calc(100% - 24px); 
-    padding: 10px;
-    margin-bottom: 20px; 
-    border-radius: 4px;
-    border: 1px solid #ddd;
-    font-size: 16px; 
-}
-
-.show-hide-btn {
-    display: block;
-    padding: 10px;
-    margin: 10px 0 20px 0; 
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    color: #007bff;
-    text-align: center;
-    font-size: 14px;
-    cursor: pointer;
-    text-decoration: none; 
-}
-
-button[type="submit"] {
-    width: 100%;
-    padding: 15px; 
-    margin-bottom: 20px; 
-    border-radius: 4px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    font-size: 18px; 
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease; 
-}
-
-button[type="submit"]:hover,
-.show-hide-btn:hover {
-    background-color: #0056b3; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In | Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
 </head>
 <body>
-  <div class="login-container">
-    <h1>Login</h1>
-    <form action="/login" method="post">
-      <div>
-        <label for="username">Username or Email:</label>
-        <input type="text" id="username" name="username" required placeholder="Enter username or email">
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="button" id="togglePassword" class="show-hide-btn">Show Password</button>
-      </div>
-      <div>
-        <button type="submit">Login</button>
-        <p class="signup-link">
-          Don't have an account? <a href="/register">Sign up</a>
-        </p>
-      </div>
+  <%- include('partials/header') %>
+
+  <main class="auth-shell" id="main-content">
+    <section class="auth-story" aria-labelledby="auth-story-title">
+      <p class="eyebrow">A PLACE FOR PET PEOPLE</p>
+      <h2 id="auth-story-title">Good care starts with the little details.</h2>
+      <p>From a favorite photo to an important care note, keep the things that matter together.</p>
+
+      <ul class="auth-benefits">
+        <li>
+          <span class="icon-badge"><%- include('partials/icon', { name: 'paw' }) %></span>
+          <div>
+            <strong>Every pet, their own little space</strong>
+            <p>Photos, medical history, and details you can come back to.</p>
+          </div>
+        </li>
+        <li>
+          <span class="icon-badge"><%- include('partials/icon', { name: 'heart' }) %></span>
+          <div>
+            <strong>Care with a personal touch</strong>
+            <p>A sitter profile for your story, experience, and hourly rate.</p>
+          </div>
+        </li>
+      </ul>
+
+      <footer><small>Made for pets and the people who love them.</small></footer>
+    </section>
+
+    <section class="auth-card" aria-labelledby="login-title">
+      <p class="eyebrow">WELCOME HOME</p>
+      <h1 id="login-title">Welcome back.</h1>
+      <p class="muted">Log in to your pet dashboard.</p>
+
       <% if (errorMessage) { %>
-        <p style="color: red;"><%= errorMessage %></p>
+        <div class="alert" id="login-error" role="alert"><%= errorMessage %></div>
       <% } %>
-    </form>
-  </div>
-  
 
-  <script>
-    const togglePassword = document.getElementById('togglePassword');
-    const password = document.getElementById('password');
+      <form class="auth-form" action="/login" method="post"<% if (errorMessage) { %> aria-describedby="login-error"<% } %>>
+        <div class="form-group">
+          <label for="username">Username or email</label>
+          <input type="text" id="username" name="username" required autocomplete="username" value="<%= typeof username !== 'undefined' ? username : '' %>" placeholder="Enter your username or email">
+        </div>
 
-    togglePassword.addEventListener('click', function (e) {
-      e.preventDefault();
-      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-      password.setAttribute('type', type);
-      this.textContent = type === 'password' ? 'Show Password' : 'Hide Password';
-    });
-  </script>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-field">
+            <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+            <button type="button" id="togglePassword" class="password-toggle" data-password-toggle="password" aria-controls="password" aria-pressed="false" aria-label="Show password">Show</button>
+          </div>
+        </div>
+
+        <button type="submit" class="button button-primary">Log in <%- include('partials/icon', { name: 'arrow-right' }) %></button>
+      </form>
+
+      <p class="auth-switch">New around here? <a href="/register">Create an account</a></p>
+      <a href="/" class="button button-ghost"><%- include('partials/icon', { name: 'arrow-left' }) %> Back to home</a>
+    </section>
+  </main>
+
+  <%- include('partials/footer') %>
 </body>
 </html>

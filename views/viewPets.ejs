@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Your Pets</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Pets | Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
 </head>
 <body>
-  <h1>Your Pets</h1>
-  <% if(user.pets && user.pets.length > 0) { %>
-    <% user.pets.forEach(pet => { %>
+  <%- include('partials/header') %>
+  <main class="page-shell" id="main-content">
+    <div class="page-header">
       <div>
-        <h3><%= pet.name %></h3>
-        <p>Type: <%= pet.type %></p>
-        <p>Medical History: <%= pet.medicationHistory %></p> 
-        <% if(pet.photoUrl) { %>
-          <img src="/<%= pet.photoUrl %>" alt="<%= pet.name %>" />
-        <% } %>
+        <p class="eyebrow">Your companions</p>
+        <h1>Your pets</h1>
+        <p class="muted">Little personalities. A whole lot of love.</p>
       </div>
-    <% }) %>
-  <% } else { %>
-    <p>No pets added yet.</p>
-  <% } %>  
+      <a href="/pets/add" class="button button-primary"><%- include('partials/icon', { name: 'plus' }) %> Add Pet</a>
+    </div>
+    <%- include('partials/petList', { pets, showHeading: false }) %>
+  </main>
+  <%- include('partials/footer') %>
 </body>
 </html>

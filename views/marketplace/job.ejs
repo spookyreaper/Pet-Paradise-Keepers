@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title><%= job.title %> · Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <%
+    const pet = job.pet || {};
+    const owner = job.owner || {};
+    const acceptingRequests = job.status === 'open' && new Date(job.endDate).getTime() > Date.now();
+    const relativePhoto = typeof pet.photoUrl === 'string' ? pet.photoUrl.replace(/^\/?public\//, '').replace(/^\/+/, '') : '';
+    const petPhoto = relativePhoto.startsWith('uploads/') ? '/' + relativePhoto : '';
+    const dateFormatter = new Intl.DateTimeFormat('en-US', {
+      month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+      timeZone: 'America/New_York', timeZoneName: 'short',
+    });
+    const formatDate = value => {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? 'Not specified' : dateFormatter.format(date);
+    };
+  %>
+  <main class="page-shell page-shell-narrow" id="main-content">
+    <p><a href="/jobs" class="text-link"><%- include('../partials/icon', { name: 'arrow-left' }) %> Back to sitting jobs</a></p>
+    <div class="page-header">
+      <div>
+        <p class="eyebrow"><%= isOwner ? 'Your sitting job' : 'A little care goes a long way' %></p>
+        <h1><%= job.title %></h1>
+        <p class="muted">For <%= pet.name || 'a pet' %><% if (pet.type) { %> · <%= pet.type %><% } %></p>
+      </div>
+      <span class="job-status <%= acceptingRequests ? 'job-status-open' : 'job-status-closed' %>"><%= job.status === 'closed' ? 'Closed listing' : (acceptingRequests ? 'Open for requests' : 'Listing has ended') %></span>
+    </div>
+
+    <div class="job-details">
+      <section class="details-card">
+        <span class="icon-badge"><%- include('../partials/icon', { name: 'heart' }) %></span>
+        <h2>Care details</h2>
+        <p class="preserve-lines"><%= job.description %></p>
+      </section>
+      <aside class="marketplace-card" aria-label="Sitting job details">
+        <div class="marketplace-person">
+          <% if (petPhoto) { %>
+            <img class="marketplace-avatar" src="<%= petPhoto %>" alt="Photo of <%= pet.name || 'the pet' %>">
+          <% } else { %>
+            <span class="marketplace-avatar icon-badge" aria-hidden="true"><%- include('../partials/icon', { name: 'paw' }) %></span>
+          <% } %>
+          <div><h2><%= pet.name || 'Pet profile unavailable' %></h2><p class="muted"><%= pet.type || 'Pet care' %></p></div>
+        </div>
+        <p class="rate-tag">$<%= Number(job.budget).toFixed(2) %><small>/hour offered</small></p>
+        <ul class="listing-meta">
+          <% if (job.location) { %><li><%- include('../partials/icon', { name: 'location' }) %> <span><%= job.location %></span></li><% } %>
+          <li><%- include('../partials/icon', { name: 'calendar' }) %> <span><strong>Starts</strong><br><%= formatDate(job.startDate) %></span></li>
+          <li><%- include('../partials/icon', { name: 'clock' }) %> <span><strong>Ends</strong><br><%= formatDate(job.endDate) %></span></li>
+        </ul>
+        <p class="field-help">Dates and times are shown in Eastern time.</p>
+        <p class="field-help">Posted by <%= owner.firstName || 'Pet owner' %> <%= owner.lastName || '' %></p>
+      </aside>
+    </div>
+
+    <% if (isOwner) { %>
+      <section class="marketplace-card">
+        <h2>Manage your listing</h2>
+        <p class="muted">Review requests, talk with sitters, and close the listing when you are done looking.</p>
+        <div class="listing-actions">
+          <a href="/requests" class="button button-primary">View requests <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+          <% if (job.status === 'open') { %>
+            <a href="/jobs/<%= job._id %>/edit" class="button button-secondary"><%- include('../partials/icon', { name: 'edit' }) %> Edit listing</a>
+            <form action="/jobs/<%= job._id %>/close" method="post" onsubmit="return confirm('Close this listing to new requests?');">
+              <button class="button button-ghost" type="submit">Close listing</button>
+            </form>
+          <% } %>
+        </div>
+      </section>
+    <% } else { %>
+      <section class="marketplace-card">
+        <h2><%= acceptingRequests ? 'Think you could be a good fit?' : (job.status === 'closed' ? 'This listing is closed.' : 'This sitting job has ended.') %></h2>
+        <p class="muted"><%= acceptingRequests ? 'Introduce yourself and propose an hourly rate. You can discuss the details privately with the owner.' : 'New requests are no longer available for this job. You can continue a conversation with the owner.' %></p>
+        <div class="listing-actions">
+          <% if (acceptingRequests) { %><a href="/jobs/<%= job._id %>/request" class="button button-primary">Apply for this job <%- include('../partials/icon', { name: 'arrow-right' }) %></a><% } %>
+          <% if (owner._id) { %><a href="/messages/new?recipient=<%= owner._id %>" class="button button-secondary"><%- include('../partials/icon', { name: 'message' }) %> Message the owner</a><% } %>
+        </div>
+      </section>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

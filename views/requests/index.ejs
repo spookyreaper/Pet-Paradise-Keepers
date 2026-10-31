@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Requests | Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main class="page-shell" id="main-content">
+    <% const requestId = value => String(value && value._id || value || ''); %>
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Good care starts with a conversation</p>
+        <h1>Your requests</h1>
+        <p class="muted">Follow introductions, offers, and the details you agree on.</p>
+      </div>
+      <a class="button button-primary" href="<%= user.role === 'owner' ? '/sitters' : '/jobs' %>"><%= user.role === 'owner' ? 'Find a sitter' : 'Browse sitting jobs' %> <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+    </div>
+    <% if (careRequests.length) { %>
+      <div class="request-list">
+        <% careRequests.forEach(request => { const other = requestId(request.owner) === requestId(user) ? request.sitter : request.owner; %>
+          <article class="request-card">
+            <div class="request-card-top">
+              <span class="badge"><%= request.kind === 'job' ? 'Sitting job' : 'Interview' %></span>
+              <span class="badge"><%= request.status %></span>
+            </div>
+            <h2><a href="/requests/<%= request._id %>"><%= request.job ? request.job.title : (request.pet ? 'Care for ' + request.pet.name : 'Pet care request') %></a></h2>
+            <p class="muted">With <%= other ? other.firstName + ' ' + other.lastName : 'a former participant' %><% if (request.pet) { %> · <%= request.pet.name %><% } %></p>
+            <div class="request-actions">
+              <strong>$<%= Number(request.proposedRate).toFixed(2) %>/hr</strong>
+              <a href="/requests/<%= request._id %>" class="button button-secondary button-small">View request <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <%- include('../partials/icon', { name: 'heart' }) %>
+        <h2>Your next connection starts here</h2>
+        <p>No requests yet. <%= user.role === 'owner' ? 'Find a sitter and invite them to an interview.' : 'Browse sitting jobs and introduce yourself to an owner.' %></p>
+        <a href="<%= user.role === 'owner' ? '/sitters' : '/jobs' %>" class="button button-primary"><%= user.role === 'owner' ? 'Find a sitter' : 'Browse sitting jobs' %></a>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

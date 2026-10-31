@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pet.name %> | Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main class="page-shell" id="main-content">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Your companion</p>
+        <h1><%= pet.name %></h1>
+        <span class="badge"><%= pet.type %></span>
+      </div>
+      <div class="form-actions">
+        <a href="/pets" class="button button-ghost button-small"><%- include('partials/icon', { name: 'arrow-left' }) %> All Pets</a>
+        <a href="/pets/<%= pet._id %>/edit" class="button button-primary"><%- include('partials/icon', { name: 'edit' }) %> Edit Pet</a>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <section class="details-card">
+        <div class="pet-card-photo">
+          <% if (pet.photoUrl) { %>
+            <img src="/<%= pet.photoUrl.replace(/^\/?public\//, '').replace(/^\/+/, '') %>" alt="Photo of <%= pet.name %>">
+          <% } else { %>
+            <%- include('partials/icon', { name: 'paw' }) %>
+          <% } %>
+        </div>
+        <h2>Meet <%= pet.name %></h2>
+        <p class="muted">Type: <%= pet.type %></p>
+      </section>
+
+      <section class="details-card">
+        <span class="badge"><%- include('partials/icon', { name: 'heart' }) %> Care notes</span>
+        <h2>Medical History</h2>
+        <p class="preserve-lines"><%= pet.medicationHistory || 'No medical history provided.' %></p>
+        <% if (pet.schedule) { %>
+          <div class="form-section">
+            <h2>Care Schedule</h2>
+            <p class="preserve-lines"><%= pet.schedule %></p>
+          </div>
+        <% } %>
+      </section>
+    </div>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>

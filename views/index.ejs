@@ -3,30 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Pet Paradise</title>
-    <link rel="stylesheet" href="/css/styles.css"> <!-- Ensure the path to your CSS file is correct -->
+    <meta name="description" content="A happier home for your pet's details. Manage pet profiles or share your experience as a sitter with Pet Paradise Keepers.">
+    <title>Pet Paradise Keepers — Care starts here</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/js/ui.js" defer></script>
 </head>
 <body>
     <%- include('partials/header') %>
 
-    <main class="container">
-        <section id="owner-section" class="form-group">
-            <h2>Are You a Pet Owner?</h2>
-            <p>Find the perfect sitter for your furry friend. Join now to connect with trusted pet sitters in your area.</p>
-            <button class="button" onclick="window.location.href='/register';">Join Now as Owner</button>
-        </section>
-        
-        <section id="sitter-section" class="form-group">
-            <h2>Want to Earn Money as a Pet Sitter?</h2>
-            <p>Join our community of pet lovers and start earning by providing care for pets in your neighborhood.</p>
-            <button class="button" onclick="window.location.href='/register';">Join Now as Sitter</button>
-        </section>
+    <main id="main-content" class="home-shell">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> For the love of pets</p>
+          <h1>Good care.<br>Happy pets.<br><span>Peace of mind.</span></h1>
+          <p class="hero-description">Find a helping hand or your next pet sitting job. Meet your pet people, discuss the details, and find a rate that works for both of you.</p>
+          <div class="hero-actions">
+            <% if (typeof user !== 'undefined' && user) { %>
+              <a class="button button-primary" href="/dashboard">Go to your dashboard <%- include('partials/icon', { name: 'arrow-right' }) %></a>
+            <% } else { %>
+              <a class="button button-primary" href="/register?role=owner">I'm a pet owner <%- include('partials/icon', { name: 'arrow-right' }) %></a>
+              <a class="button button-secondary" href="/register?role=sitter">I'm a pet sitter</a>
+            <% } %>
+          </div>
+          <div class="hero-note"><span class="icon-badge"><%- include('partials/icon', { name: 'heart' }) %></span><span>Made for the people who treat pets like family.</span></div>
+        </div>
+        <div class="hero-art" aria-label="A friendly family of dogs, cats, and other pets">
+          <div class="hero-art-top"><span class="badge"><span class="status-dot" aria-hidden="true"></span> All paws welcome</span><%- include('partials/icon', { name: 'heart' }) %></div>
+          <div class="hero-art-message"><span class="hero-paw"><%- include('partials/icon', { name: 'paw' }) %></span><p>Their favorite place?<br><strong>Right by your side.</strong></p></div>
+          <img src="/background.jpeg" alt="Dogs, cats, a rabbit, and a bird together" width="662" height="360" class="hero-pets">
+          <span class="hero-sticker"><%- include('partials/icon', { name: 'check' }) %> Little details. Lots of love.</span>
+        </div>
+      </section>
+
+      <section class="home-features" aria-labelledby="features-title">
+        <div class="section-heading"><div><p class="eyebrow">Care, made simpler</p><h2 id="features-title">Everything in its happy place.</h2></div><p class="muted">Less scattered information.<br>More time together.</p></div>
+        <div class="feature-grid">
+          <article class="feature-card" id="owner-section"><span class="icon-badge"><%- include('partials/icon', { name: 'paw' }) %></span><h3>A helping hand for your pet</h3><p>Browse sitter profiles and hourly rates, or post a sitting job with the dates and care your pet needs.</p><a class="text-link" href="<%= typeof user !== 'undefined' && user ? (user.role === 'owner' ? '/sitters' : '/jobs') : '/register?role=owner' %>">Find your care connection <%- include('partials/icon', { name: 'arrow-right' }) %></a></article>
+          <article class="feature-card" id="sitter-section"><span class="icon-badge icon-badge-peach"><%- include('partials/icon', { name: 'briefcase' }) %></span><h3>Your next sitting opportunity</h3><p>Find pets looking for a sitter, introduce yourself, and send a request with the rate you have in mind.</p><a class="text-link" href="<%= typeof user !== 'undefined' && user ? '/jobs' : '/register?role=sitter' %>">Explore sitting jobs <%- include('partials/icon', { name: 'arrow-right' }) %></a></article>
+          <article class="feature-card"><span class="icon-badge icon-badge-lavender"><%- include('partials/icon', { name: 'message' }) %></span><h3>Talk it through together</h3><p>Request an interview, exchange hourly offers, and work out the little details in a private conversation.</p><a class="text-link" href="<%= typeof user !== 'undefined' && user ? '/messages' : '/login' %>">Keep the conversation going <%- include('partials/icon', { name: 'arrow-right' }) %></a></article>
+        </div>
+      </section>
     </main>
-
-    <footer>
-        <p>&copy; 2024 Pet Paradise. All rights reserved.</p>
-    </footer>
+    <%- include('partials/footer') %>
 </body>
-<img src="/background.jpeg" alt="Description of Image" class="background-image">
-
 </html>

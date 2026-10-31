@@ -1,45 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Pet Information</title>
-    <link rel="stylesheet" href="/css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Pet | Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
 </head>
 <body>
-    <% include('partials/header') %>
+  <%- include('partials/header') %>
+  <main class="page-shell page-shell-narrow" id="main-content">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Your companions</p>
+        <h1>Edit <%= pet.name || 'your pet' %>’s profile</h1>
+        <p class="muted">Keep their details up to date and their care personal.</p>
+      </div>
+      <a href="/pets/<%= pet._id %>" class="button button-ghost button-small"><%- include('partials/icon', { name: 'arrow-left' }) %> Back to profile</a>
+    </div>
 
-    <h1>Edit Pet Information</h1>
+    <% if (errorMessage) { %>
+      <div class="alert" role="alert"><%= errorMessage %></div>
+    <% } %>
 
-    <form action="/pets/<%= pet._id %>/edit" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="_method" value="PUT">
-        <div>
-            <label for="name">Pet Name:</label>
-            <input type="text" id="name" name="name" value="<%= pet.name %>" required>
+    <form class="form-card" action="/pets/<%= pet._id %>/edit" method="post" enctype="multipart/form-data">
+      <section class="form-section">
+        <h2>The essentials</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Pet name</label>
+            <input type="text" id="name" name="name" value="<%= pet.name %>" maxlength="100" required>
+          </div>
+          <div class="form-group">
+            <label for="type">Pet type</label>
+            <input type="text" id="type" name="type" value="<%= pet.type %>" maxlength="100" required>
+          </div>
         </div>
-        <div>
-            <label for="type">Pet Type:</label>
-            <input type="text" id="type" name="type" value="<%= pet.type %>" required>
+      </section>
+
+      <section class="form-section">
+        <h2>A little extra care</h2>
+        <div class="form-group">
+          <label for="medicationHistory">Medical history <span class="muted">(optional)</span></label>
+          <textarea id="medicationHistory" name="medicationHistory" maxlength="5000" rows="5" placeholder="Medications, allergies, or anything helpful to know." aria-describedby="medical-help"><%= pet.medicationHistory || '' %></textarea>
+          <p class="field-help" id="medical-help">Include any health needs or care instructions. Up to 5,000 characters.</p>
         </div>
-        <div>
-            <label for="medicalHistory">Medical History:</label>
-            <textarea id="medicalHistory" name="medicalHistory"><%= pet.medicalHistory %></textarea>
-        </div>
-        <div>
-            <label for="photo">Pet Photo:</label>
-            <input type="file" id="photo" name="photo">
+      </section>
+
+      <section class="form-section">
+        <h2>Pet photo</h2>
+        <div class="upload-field">
+          <div class="photo-preview" data-photo-preview aria-label="Pet photo preview">
             <% if (pet.photoUrl) { %>
-                <img src="/<%= pet.photoUrl %>" alt="Pet photo" width="100">
+              <img id="pet-photo-preview" src="/<%= pet.photoUrl.replace(/^\/?public\//, '').replace(/^\/+/, '') %>" alt="Photo of <%= pet.name %>" data-image-preview>
+            <% } else { %>
+              <img id="pet-photo-preview" alt="Selected pet photo" data-image-preview hidden>
+              <%- include('partials/icon', { name: 'paw' }) %>
             <% } %>
+          </div>
+          <div class="form-group">
+            <label for="photo">Choose a new photo <span class="muted">(optional)</span></label>
+            <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/gif,image/webp" data-image-input="pet-photo-preview" aria-describedby="photo-help">
+            <p class="field-help" id="photo-help">JPG, PNG, GIF, or WebP. Your current photo stays unless you choose a new one.</p>
+          </div>
         </div>
-        <button type="submit">Update Pet</button>
+      </section>
+
+      <div class="form-actions">
+        <button type="submit" class="button button-primary"><%- include('partials/icon', { name: 'check' }) %> Update Pet</button>
+        <a href="/pets/<%= pet._id %>" class="button button-secondary">Cancel</a>
+      </div>
     </form>
 
-    <form action="/pets/<%= pet._id %>" method="post">
-        <input type="hidden" name="_method" value="DELETE">
-        <button type="submit">Delete Pet</button>
-    </form>
-    
+    <section class="danger-zone">
+      <div>
+        <h2>Remove this pet</h2>
+        <p class="muted">This removes their profile and photo from your account.</p>
+      </div>
+      <form action="/pets/<%= pet._id %>?_method=DELETE" method="post" onsubmit="return confirm('Delete this pet?');">
+        <button type="submit" class="button button-danger">Delete Pet</button>
+      </form>
+    </section>
+  </main>
+  <%- include('partials/footer') %>
 </body>
-<img src="/background.jpeg" alt="Description of Image" class="background-image">
 </html>

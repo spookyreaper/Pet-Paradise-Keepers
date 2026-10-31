@@ -1,24 +1,45 @@
 <section>
-  <h2>Your Pets</h2>
-  <% if(user.pets && user.pets.length > 0) { %>
-    <ul>
-      <% user.pets.forEach(function(pet) { %>
-        <li>
-          <% if(pet.photoUrl) { %>
-            <img src="<%= pet.photoUrl.startsWith('public/') ? pet.photoUrl.replace('public/', '') : pet.photoUrl %>" alt="Photo of <%= pet.name %>" class="pet-photo" onerror="this.onerror=null; this.src='/images/default.png';">
-          <% } else { %>
-            <img src="/images/default.png" alt="Default image" class="pet-photo">
-          <% } %>
-          <div>
-            <h3><%= pet.name %></h3>
-            <p>Type: <%= pet.type %></p>
-            <p>Medical History: <%= pet.medicationHistory %></p>
-            <a href="/pets/<%= pet._id %>/edit" class="edit-pet-button">Edit Pet</a>
+  <% const petList = (typeof pets !== 'undefined' ? pets : (user && user.pets) || []).filter(pet => pet && pet.name); %>
+  <% if (typeof showHeading === 'undefined' || showHeading) { %>
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Your companions</p>
+        <h2>Your pet family</h2>
+      </div>
+      <a href="/pets" class="button button-ghost button-small">View all pets <%- include('icon', { name: 'arrow-right' }) %></a>
+    </div>
+  <% } %>
+  <% if (petList.length > 0) { %>
+    <ul class="pet-grid">
+      <% petList.forEach(function(pet) { %>
+        <li class="pet-card">
+          <div class="pet-card-photo">
+            <% if (pet.photoUrl) { %>
+              <img src="/<%= pet.photoUrl.replace(/^\/?public\//, '').replace(/^\/+/, '') %>" alt="Photo of <%= pet.name %>" loading="lazy">
+            <% } else { %>
+              <%- include('icon', { name: 'paw' }) %>
+            <% } %>
+          </div>
+          <div class="pet-card-body">
+            <div class="pet-card-meta">
+              <h3><a href="/pets/<%= pet._id %>"><%= pet.name %></a></h3>
+              <span class="badge"><%= pet.type %></span>
+            </div>
+            <p class="muted">Medical History: <%= pet.medicationHistory ? pet.medicationHistory.slice(0, 120) + (pet.medicationHistory.length > 120 ? '…' : '') : 'No medical history provided.' %></p>
+            <div class="pet-card-actions">
+              <a href="/pets/<%= pet._id %>" class="button button-ghost button-small">View pet <%- include('icon', { name: 'arrow-right' }) %></a>
+              <a href="/pets/<%= pet._id %>/edit" class="button button-secondary button-small"><%- include('icon', { name: 'edit' }) %> Edit Pet</a>
+            </div>
           </div>
         </li>
       <% }); %>
-    </ul>        
+    </ul>
   <% } else { %>
-    <p>You have not added any pets yet.</p>
+    <div class="empty-state">
+      <%- include('icon', { name: 'paw' }) %>
+      <h3>A little more love belongs here</h3>
+      <p>You have not added any pets yet.</p>
+      <a href="/pets/add" class="button button-primary"><%- include('icon', { name: 'plus' }) %> Add your first pet</a>
+    </div>
   <% } %>
 </section>

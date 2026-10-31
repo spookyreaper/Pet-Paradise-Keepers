@@ -1,48 +1,51 @@
-<!-- partials/header.ejs -->
-<nav class="navbar">
-    <a href="/" class="navbar-brand">Pet Paradise Keepers</a>
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a href="/search-sitters" class="nav-link">Search Sitters</a>
-      </li>
-      <li class="nav-item">
-        <a href="/become-sitter" class="nav-link">Become a Sitter</a>
-      </li>
-      <li class="nav-item">
-        <a href="/services" class="nav-link">Our Services</a>
-      </li>
-    </ul>
-  
-    <% if (user) { %>
-      <div class="user-dropdown">
-        <button class="user-dropdown-toggle" id="userMenuButton">
-          <%= user.firstName %> <span class="caret"></span>
-        </button>
-        <div class="user-dropdown-menu" aria-labelledby="userMenuButton">
-          <a class="dropdown-item" href="/dashboard">Dashboard</a>
-          <% if (user.role === 'owner') { %>
-            <a class="dropdown-item" href="/owner/profile">Profile</a>
-          <% } else if (user.role === 'sitter') { %>
-            <a class="dropdown-item" href="/sitter/profile">Profile</a>
-          <% } %>
-          <a class="dropdown-item" href="/inbox">Inbox</a>
-          <a class="dropdown-item" href="/settings">Settings</a>
-          <a class="dropdown-item" href="/your-pets">Your Pets</a>
-          <div class="dropdown-divider"></div>
-          <form id="logoutForm" action="/logout" method="POST" style="display: none;">
-          </form>
-          <a class="dropdown-item" href="#" onclick="document.getElementById('logoutForm').submit(); return false;">Log out</a>
-        </div>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="site-header">
+  <nav class="navbar" aria-label="Main navigation">
+    <a href="/" class="navbar-brand" aria-label="Pet Paradise Keepers home">
+      <span class="brand-icon"><%- include('icon', { name: 'paw' }) %></span>
+      <span>Pet Paradise <span class="brand-subtitle">Keepers</span></span>
+    </a>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <div class="nav-actions">
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <% if (user.role === 'owner') { %>
+          <a href="/pets" class="nav-link">My pets</a>
+          <a href="/sitters" class="nav-link nav-marketplace-link">Find sitters</a>
+          <a href="/jobs" class="nav-link nav-marketplace-link">Sitting jobs</a>
+        <% } else { %>
+          <a href="/jobs" class="nav-link nav-marketplace-link">Find jobs</a>
+        <% } %>
+        <a href="/requests" class="nav-link nav-marketplace-link">Requests</a>
+        <a href="/messages" class="nav-link nav-marketplace-link">Messages</a>
+        <details class="user-dropdown">
+          <summary class="user-dropdown-toggle">
+            <span class="nav-avatar"><%= (user.firstName || 'P').charAt(0).toUpperCase() %></span>
+            <span class="user-menu-name"><%= user.firstName %></span>
+            <span class="dropdown-caret" aria-hidden="true"></span>
+          </summary>
+          <div class="user-dropdown-menu">
+            <p class="dropdown-label"><%= user.role === 'owner' ? 'Pet owner' : 'Pet sitter' %> account</p>
+            <a class="dropdown-item" href="/<%= user.role %>/profile"><%- include('icon', { name: 'user' }) %> Edit profile</a>
+            <% if (user.role === 'owner') { %>
+              <a class="dropdown-item" href="/sitters"><%- include('icon', { name: 'search' }) %> Find sitters</a>
+              <a class="dropdown-item" href="/jobs"><%- include('icon', { name: 'briefcase' }) %> Sitting jobs</a>
+            <% } else { %>
+              <a class="dropdown-item" href="/jobs"><%- include('icon', { name: 'briefcase' }) %> Find jobs</a>
+            <% } %>
+            <a class="dropdown-item" href="/requests"><%- include('icon', { name: 'calendar' }) %> Requests</a>
+            <a class="dropdown-item" href="/messages"><%- include('icon', { name: 'message' }) %> Messages</a>
+            <form class="nav-logout-form" action="/logout" method="POST">
+              <button class="dropdown-item logout-button" type="submit"><%- include('icon', { name: 'logout' }) %> Log out</button>
+            </form>
+          </div>
+        </details>
       </div>
     <% } else { %>
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a href="/login" class="nav-link">Login</a>
-        </li>
-        <li class="nav-item">
-          <a href="/register" class="nav-link">Register</a>
-        </li>
-      </ul>
+      <div class="nav-actions">
+        <a href="/login" class="nav-link">Log in</a>
+        <a href="/register" class="button button-primary button-small">Get started <%- include('icon', { name: 'arrow-right' }) %></a>
+      </div>
     <% } %>
   </nav>
-  
+</header>
+

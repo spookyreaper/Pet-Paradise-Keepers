@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send a Request | Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main class="page-shell" id="main-content">
+    <% const isJob = context.kind === 'job'; %>
+    <div class="page-header">
+      <div>
+        <p class="eyebrow"><%= isJob ? 'Find your next companion' : 'Meet your pet’s next friend' %></p>
+        <h1><%= isJob ? 'Request this sitting job' : 'Request an interview' %></h1>
+        <p class="muted"><%= isJob ? 'Introduce yourself and suggest an hourly rate.' : 'Start a conversation with ' + context.sitter.firstName + ' about caring for your pet.' %></p>
+      </div>
+      <a href="<%= isJob ? '/jobs/' + context.job._id : '/sitters' %>" class="button button-ghost button-small"><%- include('../partials/icon', { name: 'arrow-left' }) %> Back</a>
+    </div>
+
+    <% if (errorMessage) { %><div class="alert" role="alert"><%= errorMessage %></div><% } %>
+
+    <% if (!isJob && context.pets.length === 0) { %>
+      <div class="empty-state">
+        <%- include('../partials/icon', { name: 'paw' }) %>
+        <h2>Add your companion first</h2>
+        <p>Add a pet to your account before requesting an interview.</p>
+        <a href="/pets/add" class="button button-primary">Add Pet</a>
+      </div>
+    <% } else { %>
+      <div class="details-grid">
+        <aside class="details-card">
+          <span class="badge"><%= isJob ? 'Sitting job' : 'Interview request' %></span>
+          <h2><%= isJob ? context.job.title : context.sitter.firstName + ' ' + context.sitter.lastName %></h2>
+          <% if (isJob) { %>
+            <p class="muted">For <%= context.pet.name %> · <%= context.pet.type %></p>
+            <p><%= context.job.location %></p>
+            <p class="preserve-lines"><%= context.job.description %></p>
+            <p>Listed budget: <strong>$<%= Number(context.job.budget).toFixed(2) %>/hr</strong></p>
+          <% } else { %>
+            <p class="muted">Pet sitter</p>
+            <p>Listed rate: <strong>$<%= Number(context.sitter.rate || 0).toFixed(2) %>/hr</strong></p>
+          <% } %>
+          <p class="field-help">You can discuss the hourly rate before either person agrees. Requests coordinate care; no payment is collected here.</p>
+        </aside>
+        <form class="form-card" action="<%= context.action %>" method="post">
+          <h2>Your request</h2>
+          <% if (!isJob) { %>
+            <div class="form-group">
+              <label for="petId">Who needs care?</label>
+              <select id="petId" name="petId" required>
+                <option value="">Choose your pet</option>
+                <% context.pets.forEach(pet => { %>
+                  <option value="<%= pet._id %>" <%= String(values.petId || '') === String(pet._id) ? 'selected' : '' %>><%= pet.name %> · <%= pet.type %></option>
+                <% }); %>
+              </select>
+            </div>
+          <% } %>
+          <div class="form-group">
+            <label for="proposedRate">Proposed hourly rate ($/hr)</label>
+            <input id="proposedRate" name="proposedRate" type="number" min="0" max="10000" step="0.01" value="<%= values.proposedRate ?? '' %>" required>
+            <p class="field-help">Use up to two decimal places. The other person can accept or suggest a different rate.</p>
+          </div>
+          <div class="form-group">
+            <label for="message">Introduce yourself <span class="muted">(optional)</span></label>
+            <textarea id="message" name="message" rows="5" maxlength="2000" placeholder="Share what you’re looking for and a good time to talk."><%= values.message || '' %></textarea>
+            <p class="field-help">Up to 2,000 characters. Only you and the other participant can view this request.</p>
+          </div>
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">Send request <%- include('../partials/icon', { name: 'arrow-right' }) %></button>
+            <a href="/requests" class="button button-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

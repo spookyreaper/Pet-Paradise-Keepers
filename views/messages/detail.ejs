@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title>Conversation with <%= recipient.firstName %> · Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+  <script src="/js/messages.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" class="page-shell page-shell-narrow">
+    <div class="page-header">
+      <div><p class="eyebrow">A little conversation, a better connection</p><h1>Your conversation</h1><p class="muted">Work out the details together, one message at a time.</p></div>
+      <a href="/messages" class="button button-ghost button-small"><%- include('../partials/icon', { name: 'arrow-left' }) %> All messages</a>
+    </div>
+    <% if (errorMessage) { %><div class="alert" role="alert"><%= errorMessage %></div><% } %>
+    <section class="thread-card" aria-label="Conversation with <%= recipient.firstName %> <%= recipient.lastName %>">
+      <div class="thread-heading">
+        <% if (recipient.profilePhoto) { %>
+          <img class="profile-avatar" src="/<%= recipient.profilePhoto.replace(/^public\//, '').replace(/^\/+/, '') %>" alt="">
+        <% } else { %>
+          <span class="profile-avatar" aria-hidden="true"><%= (recipient.firstName || '').slice(0, 1) %><%= (recipient.lastName || '').slice(0, 1) %></span>
+        <% } %>
+        <div class="conversation-meta"><h2><%= recipient.firstName %> <%= recipient.lastName %></h2><span class="badge"><%= recipient.role === 'sitter' ? 'Pet sitter' : 'Pet parent' %></span></div>
+        <a href="<%= recipientProfileUrl %>" class="button button-secondary button-small"><%= recipient.role === 'sitter' ? 'View profile' : 'View care jobs' %></a>
+      </div>
+      <div class="section-heading">
+        <a href="/messages/<%= conversation._id %>?before=<%= olderCursor || '' %>" class="button button-ghost button-small" data-older-messages<%= olderCursor ? '' : ' hidden' %>><%- include('../partials/icon', { name: 'arrow-left' }) %> Older messages</a>
+        <% if (isOlderPage) { %><a href="/messages/<%= conversation._id %>" class="button button-secondary button-small">Latest messages <%- include('../partials/icon', { name: 'arrow-right' }) %></a><% } %>
+      </div>
+      <ol class="message-list" data-message-thread data-message-updates="/messages/<%= conversation._id %>/updates" data-message-older="<%= isOlderPage ? 'true' : 'false' %>">
+        <% messages.forEach(message => { const isOwn = String(message.sender) === String(user._id); const date = new Date(message.createdAt); %>
+          <li class="message-row<%= isOwn ? ' message-own' : '' %>" data-message-id="<%= message._id %>">
+            <div class="message-bubble">
+              <div class="message-meta"><strong><%= isOwn ? 'You' : recipient.firstName + ' ' + recipient.lastName %></strong><time datetime="<%= date.toISOString() %>"><%= date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' }) %></time></div>
+              <p class="preserve-lines"><%= message.body %></p>
+            </div>
+          </li>
+        <% }); %>
+      </ol>
+      <p class="muted" data-message-empty<%= messages.length ? ' hidden' : '' %>>No messages yet. Start with a friendly hello.</p>
+      <p class="field-help" data-message-status aria-live="polite" hidden></p>
+      <noscript><p class="field-help">Refresh this page to check for new messages.</p></noscript>
+      <form class="message-composer" action="/messages/<%= conversation._id %>" method="post">
+        <div class="form-group">
+          <label for="body">Message <%= recipient.firstName %></label>
+          <textarea id="body" name="body" rows="3" maxlength="2000" required aria-describedby="messageHelp" placeholder="Write your message here"><%= values.body %></textarea>
+          <p id="messageHelp" class="field-help">Up to 2,000 characters. Messages are private between you and <%= recipient.firstName %>.</p>
+        </div>
+        <div class="form-actions">
+          <a href="/requests" class="button button-ghost button-small">View requests</a>
+          <button type="submit" class="button button-primary">Send message <%- include('../partials/icon', { name: 'arrow-right' }) %></button>
+        </div>
+      </form>
+    </section>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

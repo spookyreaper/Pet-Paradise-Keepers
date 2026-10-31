@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title>New message · Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" class="page-shell page-shell-narrow">
+    <div class="page-header">
+      <div><p class="eyebrow">Say hello</p><h1>Start a conversation</h1><p class="muted">Ask a question or discuss a care job before making a request.</p></div>
+      <a href="/messages" class="button button-ghost button-small"><%- include('../partials/icon', { name: 'arrow-left' }) %> Messages</a>
+    </div>
+    <% if (errorMessage) { %><div class="alert" role="alert"><%= errorMessage %></div><% } %>
+    <% if (recipient) { %>
+      <form class="form-card message-composer" action="/messages/start" method="post">
+        <input type="hidden" name="recipientId" value="<%= values.recipientId %>">
+        <div class="thread-heading">
+          <% if (recipient.profilePhoto) { %>
+            <img class="profile-avatar" src="/<%= recipient.profilePhoto.replace(/^public\//, '').replace(/^\/+/, '') %>" alt="">
+          <% } else { %>
+            <span class="profile-avatar" aria-hidden="true"><%= (recipient.firstName || '').slice(0, 1) %><%= (recipient.lastName || '').slice(0, 1) %></span>
+          <% } %>
+          <div class="conversation-meta"><p class="eyebrow">To <%= recipient.role === 'sitter' ? 'a pet sitter' : 'a pet owner' %></p><h2><%= recipient.firstName %> <%= recipient.lastName %></h2></div>
+          <a href="<%= recipientProfileUrl %>" class="button button-secondary button-small"><%= recipient.role === 'sitter' ? 'View profile' : 'View care jobs' %></a>
+        </div>
+        <div class="form-group">
+          <label for="body">Your message</label>
+          <textarea id="body" name="body" rows="5" maxlength="2000" required aria-describedby="messageHelp" placeholder="Introduce yourself and share what you'd like to discuss"><%= values.body %></textarea>
+          <p id="messageHelp" class="field-help">Up to 2,000 characters. Only you and this person can read this conversation.</p>
+        </div>
+        <div class="form-actions">
+          <a href="/messages" class="button button-secondary">Cancel</a>
+          <button type="submit" class="button button-primary">Send message <%- include('../partials/icon', { name: 'arrow-right' }) %></button>
+        </div>
+      </form>
+    <% } else { %>
+      <section class="empty-state">
+        <span class="icon-badge"><%- include('../partials/icon', { name: 'user' }) %></span>
+        <h2>Who would you like to meet?</h2>
+        <p>Choose <%= user.role === 'owner' ? 'a sitter' : 'an owner with a care job' %> to start a private conversation.</p>
+        <a href="<%= browseUrl %>" class="button button-primary"><%= user.role === 'owner' ? 'Browse sitters' : 'Browse care jobs' %> <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+      </section>
+      <% if (values.body) { %>
+        <section class="details-card">
+          <h2>Your message draft</h2><p class="muted">Copy your draft before choosing another person.</p>
+          <label for="savedDraft">Draft message</label><textarea id="savedDraft" rows="5" readonly><%= values.body %></textarea>
+        </section>
+      <% } %>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

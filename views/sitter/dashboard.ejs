@@ -3,55 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title>My sitter dashboard · Pet Paradise Keepers</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <title>Sitter Dashboard</title>
+  <script src="/js/ui.js" defer></script>
 </head>
 <body>
-  <%- include('../partials/header') %> 
-
-  <div class="dashboard-wrapper">
-    <aside class="sidebar">
-      <h2>Welcome, <%= user.firstName %> <%= user.lastName %></h2>
-      <img src="<%= user.profilePhoto ? '/' + user.profilePhoto : '/images/default-profile.png' %>" alt="Profile Photo" class="profile-photo">
-      <button class="button" onclick="location.href='/sitter/profile';">Update Profile</button>
-      <button class="button" onclick="location.href='/sitter/appointments';">View Appointments</button>
-      <button class="button" onclick="location.href='/sitter/availability';">Set Availability</button>
-      <button class="button" onclick="logout();">Logout</button>
-    </aside>
-    
-    <main class="main-content">
-      <h1>Your Sitter Dashboard</h1>
-      
-      <div class="bio-info">
-        <h2>About Me</h2>
-        <p><%= user.biography %></p>
-        <h2>Experience</h2>
-        <p><%= user.experience %></p>
-        <h2>Rate</h2>
-        <p>$<%= user.rate %>/hour</p>
+  <%- include('../partials/header') %>
+  <% const hasBiography = typeof user.biography === 'string' && user.biography.trim(); %>
+  <% const hasExperience = typeof user.experience === 'string' && user.experience.trim(); %>
+  <main id="main-content" class="page-shell">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Your sitter space</p>
+        <h1>Welcome back, <%= user.firstName %>.</h1>
+        <p class="muted">Your experience, your story, and the care you bring.</p>
       </div>
+      <a href="/sitter/profile" class="button button-primary"><%- include('../partials/icon', { name: 'edit' }) %> Edit my profile</a>
+    </div>
 
-      <div class="appointment-info">
-        <h2>Your Upcoming Appointments</h2>
-        <p>No upcoming appointments. Get ready to help more pets!</p>
+    <div class="dashboard-layout">
+      <aside class="sidebar">
+        <%- include('../partials/profile') %>
+        <nav class="sidebar-nav" aria-label="Account navigation">
+          <a href="/dashboard" class="sidebar-link sidebar-link-active" aria-current="page"><%- include('../partials/icon', { name: 'paw' }) %> My dashboard</a>
+          <a href="/jobs" class="sidebar-link"><%- include('../partials/icon', { name: 'briefcase' }) %> Find jobs</a>
+          <a href="/requests" class="sidebar-link"><%- include('../partials/icon', { name: 'calendar' }) %> Requests</a>
+          <a href="/messages" class="sidebar-link"><%- include('../partials/icon', { name: 'message' }) %> Messages</a>
+          <a href="/sitter/profile" class="sidebar-link"><%- include('../partials/icon', { name: 'user' }) %> My profile</a>
+        </nav>
+        <div class="sidebar-note">
+          <%- include('../partials/icon', { name: 'heart' }) %>
+          <p>A thoughtful profile starts with your approach to pet care. Make it feel like you.</p>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <section class="marketplace-cta">
+          <div class="section-heading">
+            <div><p class="eyebrow">Put your care into action</p><h2>Make your next pet care connection.</h2></div>
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'briefcase' }) %></span>
+          </div>
+          <p class="muted">Browse sitting jobs, introduce yourself with a proposed rate, and talk through the details with pet owners.</p>
+          <div class="listing-actions">
+            <a href="/jobs" class="button button-primary">Find jobs <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+            <a href="/requests" class="button button-secondary">My requests</a>
+          </div>
+        </section>
+        <section class="stats-grid" aria-label="Your saved profile details">
+          <div class="stat-card">
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'clock' }) %></span>
+            <div><p class="stat-value">$<%= Number(user.rate || 0).toFixed(2) %><span class="muted">/hr</span></p><p class="stat-label">Your hourly rate</p></div>
+          </div>
+          <div class="stat-card">
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'camera' }) %></span>
+            <div><p class="stat-value"><%= user.profilePhoto ? 'Added' : 'Not yet' %></p><p class="stat-label">Profile photo</p></div>
+          </div>
+        </section>
+
+        <div class="section-heading">
+          <div><p class="eyebrow">A little about you</p><h2>Your care profile</h2></div>
+          <a href="/sitter/profile" class="button button-ghost button-small">Update details <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+        </div>
+        <div class="details-grid">
+          <section class="details-card">
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'heart' }) %></span>
+            <h2>About me</h2>
+            <p class="preserve-lines<%= hasBiography ? '' : ' muted' %>"><%= hasBiography ? user.biography : 'Add a few words about yourself and how you care for pets.' %></p>
+          </section>
+          <section class="details-card">
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'shield' }) %></span>
+            <h2>Experience</h2>
+            <p class="preserve-lines<%= hasExperience ? '' : ' muted' %>"><%= hasExperience ? user.experience : 'Add your pet care experience, training, or skills.' %></p>
+          </section>
+        </div>
+
+        <% if (!hasBiography || !hasExperience || !user.profilePhoto) { %>
+          <section class="details-card">
+            <p class="eyebrow">Make it your own</p>
+            <h2>A few details can say a lot.</h2>
+            <p class="muted">Add a photo, a short introduction, and your experience to bring your sitter profile together.</p>
+            <a href="/sitter/profile" class="button button-secondary">Finish my profile <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+          </section>
+        <% } %>
       </div>
-    </main>
-  </div>
-
-  <script>
-    function logout() {
-      fetch('/logout', { method: 'POST' })
-        .then(response => {
-          if (response.ok) {
-            window.location.href = '/login';
-          } else {
-            throw new Error('Logout failed.');
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-  </script>  
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
 </body>
-<img src="../background.jpeg" alt="Description of Image" class="background-image">
-
 </html>

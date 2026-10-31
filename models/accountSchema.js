@@ -16,7 +16,7 @@ const accountSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    match: [/\S+@\S+\.\S+/, 'Please provide a valid email address'] 
+    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please provide a valid email address']
   },  
   password: {
     type: String,
@@ -48,7 +48,8 @@ const accountSchema = new mongoose.Schema({
   },
   rate: {
     type: Number,
-    default: 0
+    default: 0,
+    min: [0, 'Rate cannot be negative']
   },
   profilePhoto: {
     type: String,

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('partials/header') %>
+  <main id="main-content" class="page-shell page-shell-narrow">
+    <div class="empty-state error-state">
+    <span class="icon-badge"><%- include('partials/icon', { name: 'paw' }) %></span>
+    <h1><%= title %></h1>
+    <p role="alert"><%= message %></p>
+    <a class="button button-primary" href="/">Return home <%- include('partials/icon', { name: 'arrow-right' }) %></a>
+    </div>
+  </main>
+  <%- include('partials/footer') %>
+</body>
+</html>

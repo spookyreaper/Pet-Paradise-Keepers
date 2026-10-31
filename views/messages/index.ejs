@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title>Messages · Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <%- include('../partials/header') %>
+  <main id="main-content" class="page-shell page-shell-narrow">
+    <div class="page-header">
+      <div><p class="eyebrow">Keep the conversation going</p><h1>Your messages</h1><p class="muted">A private place to ask questions and work out the details.</p></div>
+      <a href="<%= browseUrl %>" class="button button-primary"><%- include('../partials/icon', { name: 'plus' }) %> New message</a>
+    </div>
+    <div class="section-heading">
+      <p class="muted"><%= conversations.length %> <%= conversations.length === 1 ? 'conversation' : 'conversations' %></p>
+      <a href="/requests" class="button button-ghost button-small">View requests <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+    </div>
+    <% if (conversations.length) { %>
+      <div class="conversation-grid">
+        <% conversations.forEach(conversation => { const recipient = conversation.recipient; %>
+          <a href="/messages/<%= conversation._id %>" class="conversation-card<%= conversation.unread ? ' conversation-unread' : '' %>">
+            <% if (recipient.profilePhoto) { %>
+              <img class="profile-avatar" src="/<%= recipient.profilePhoto.replace(/^public\//, '').replace(/^\/+/, '') %>" alt="">
+            <% } else { %>
+              <span class="profile-avatar" aria-hidden="true"><%= (recipient.firstName || '').slice(0, 1) %><%= (recipient.lastName || '').slice(0, 1) %></span>
+            <% } %>
+            <div class="conversation-meta">
+              <div class="section-heading">
+                <h2><%= recipient.firstName %> <%= recipient.lastName %></h2>
+                <% if (conversation.unread) { %><span class="badge">Unread</span><% } %>
+              </div>
+              <p class="conversation-preview"><%= String(conversation.lastMessage?.sender) === String(user._id) ? 'You: ' : '' %><%= conversation.lastMessage?.body || 'Start the conversation.' %></p>
+              <% if (conversation.lastMessageAt) { const date = new Date(conversation.lastMessageAt); %>
+                <time class="muted" datetime="<%= date.toISOString() %>"><%= date.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' }) %></time>
+              <% } %>
+            </div>
+            <%- include('../partials/icon', { name: 'arrow-right' }) %>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <section class="empty-state">
+        <span class="icon-badge"><%- include('../partials/icon', { name: 'heart' }) %></span>
+        <h2>A good connection starts with hello.</h2>
+        <p>No conversations yet. Find <%= user.role === 'owner' ? 'a sitter' : 'an owner with a care job' %> and send your first message.</p>
+        <a href="<%= browseUrl %>" class="button button-primary"><%= user.role === 'owner' ? 'Browse sitters' : 'Browse care jobs' %> <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+      </section>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

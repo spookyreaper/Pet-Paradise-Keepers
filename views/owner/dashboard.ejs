@@ -3,51 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#244a3a">
+  <title>My pet dashboard · Pet Paradise Keepers</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <title>Dashboard</title>
+  <script src="/js/ui.js" defer></script>
 </head>
 <body>
-  <%- include('../partials/header') %> 
-
-  <div class="dashboard-wrapper">
-    <aside class="sidebar">
-      <h2><%= user.firstName %> <%= user.lastName %></h2>
-      <p>WALLET</p>
-      <p>$0.00</p>
-      <button class="logout-button">Apply Promo Code</button>
-      <button class="logout-button">Add Payment Method</button>
-      <button class="logout-button">Edit Payment</button>
-    </aside>
-    
-    <main class="main-content">
-      <h1>Welcome to Your Dashboard, <%= user.firstName %>!</h1>
-      <div class="referral-info">
-        <h2>REFER A FRIEND, GET $20</h2>
-        <p>For every friend that books their first stay, we'll give you a $20 credit towards your next booking.</p>
-        <button class="logout-button">Invite a Friend</button>
+  <%- include('../partials/header') %>
+  <% const dashboardPets = (Array.isArray(user.pets) ? user.pets : []).filter(pet => pet && pet.name); %>
+  <% const petsWithNotes = dashboardPets.filter(pet => typeof pet.medicationHistory === 'string' && pet.medicationHistory.trim()).length; %>
+  <main id="main-content" class="page-shell">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Your pet parent space</p>
+        <h1>Welcome back, <%= user.firstName %>.</h1>
+        <p class="muted">A happy little home for your pets and their care details.</p>
       </div>
-      <div class="pet-info">
-        <%- include('../partials/petList') %> 
+      <a href="/pets/add" class="button button-primary"><%- include('../partials/icon', { name: 'plus' }) %> Add a pet</a>
+    </div>
+
+    <div class="dashboard-layout">
+      <aside class="sidebar">
+        <%- include('../partials/profile') %>
+        <nav class="sidebar-nav" aria-label="Account navigation">
+          <a href="/dashboard" class="sidebar-link sidebar-link-active" aria-current="page"><%- include('../partials/icon', { name: 'paw' }) %> My dashboard</a>
+          <a href="/pets" class="sidebar-link"><%- include('../partials/icon', { name: 'heart' }) %> My pets</a>
+          <a href="/sitters" class="sidebar-link"><%- include('../partials/icon', { name: 'search' }) %> Find sitters</a>
+          <a href="/jobs" class="sidebar-link"><%- include('../partials/icon', { name: 'briefcase' }) %> Sitting jobs</a>
+          <a href="/requests" class="sidebar-link"><%- include('../partials/icon', { name: 'calendar' }) %> Requests</a>
+          <a href="/messages" class="sidebar-link"><%- include('../partials/icon', { name: 'message' }) %> Messages</a>
+          <a href="/owner/profile" class="sidebar-link"><%- include('../partials/icon', { name: 'user' }) %> My profile</a>
+        </nav>
+        <div class="sidebar-note">
+          <%- include('../partials/icon', { name: 'shield' }) %>
+          <p>A little detail makes a difference. Keep medical histories current for each pet.</p>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <section class="marketplace-cta">
+          <div class="section-heading">
+            <div><p class="eyebrow">A little extra care</p><h2>Find a helping hand for your pet.</h2></div>
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'heart' }) %></span>
+          </div>
+          <p class="muted">Explore sitter profiles and request an interview, or post a sitting job so sitters can come to you.</p>
+          <div class="listing-actions">
+            <a href="/sitters" class="button button-primary">Find sitters <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+            <a href="/jobs/new" class="button button-secondary"><%- include('../partials/icon', { name: 'plus' }) %> Post a sitting job</a>
+          </div>
+        </section>
+        <section class="stats-grid" aria-label="Your pet care at a glance">
+          <div class="stat-card">
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'paw' }) %></span>
+            <div><p class="stat-value"><%= dashboardPets.length %></p><p class="stat-label">Pet profiles</p></div>
+          </div>
+          <div class="stat-card">
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'heart' }) %></span>
+            <div><p class="stat-value"><%= petsWithNotes %></p><p class="stat-label">Medical histories added</p></div>
+          </div>
+        </section>
+
+        <%- include('../partials/petList', { pets: dashboardPets }) %>
+
+        <section class="details-card">
+          <div class="section-heading">
+            <div><p class="eyebrow">The little things matter</p><h2>Keep their care details close.</h2></div>
+            <span class="icon-badge"><%- include('../partials/icon', { name: 'shield' }) %></span>
+          </div>
+          <p class="muted">Add any medication, allergies, or care notes to your pets' medical histories, so the details are easy to find when you need them.</p>
+          <a href="/pets" class="button button-secondary button-small">Review my pets <%- include('../partials/icon', { name: 'arrow-right' }) %></a>
+        </section>
       </div>
-      <button onclick="location.href='/owner/addPet';" class="add-pet-button">Add Pet</button>
-    </main>
-  </div>
-
-
-  <script>
-    function logout() {
-      fetch('/logout', { method: 'POST' })
-        .then(response => {
-          if (response.ok) {
-            window.location.href = '/login';
-          } else {
-            throw new Error('Logout failed.');
-          }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-  </script>  
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
 </body>
-<img src="../background.jpeg" alt="Description of Image" class="background-image">
-
 </html>

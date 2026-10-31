@@ -6,13 +6,11 @@ const petSchema = new mongoose.Schema({
     ref: 'Account',
     required: true
   },
-  name: { type: String, required: true },
-  type: { type: String, required: true },
-  medicationHistory: String,
+  name: { type: String, required: true, trim: true, maxlength: 100 },
+  type: { type: String, required: true, trim: true, maxlength: 100 },
+  medicationHistory: { type: String, trim: true, maxlength: 5000, default: '' },
   schedule: String,
   photoUrl: String,
 });
 
-const Pet = mongoose.model('Pet', petSchema);
-
-module.exports = Pet;
+module.exports = mongoose.model('Pet', petSchema);

@@ -3,45 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Profile</title>
-  <link rel="stylesheet" href="/css/styles.css"> <!-- Update this path as needed -->
+  <meta name="theme-color" content="#244a3a">
+  <title>My profile · Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
 </head>
 <body>
   <%- include('../partials/header') %>
+  <main id="main-content" class="page-shell page-shell-narrow">
+    <div class="page-header">
+      <div><p class="eyebrow">Account settings</p><h1>Your profile</h1><p class="muted">Keep the details up to date and make it feel like you.</p></div>
+      <a href="/dashboard" class="button button-ghost button-small"><%- include('../partials/icon', { name: 'arrow-left' }) %> Dashboard</a>
+    </div>
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+      <div class="alert" role="alert"><%= errorMessage %></div>
+    <% } %>
+    <form class="form-card" action="/owner/profile" method="post" enctype="multipart/form-data">
+      <section class="form-section" aria-labelledby="personalHeading">
+        <div class="section-heading"><div><p class="eyebrow">The essentials</p><h2 id="personalHeading">Personal details</h2></div><%- include('../partials/icon', { name: 'user' }) %></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="firstName">First name</label>
+            <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>" required autocomplete="given-name">
+          </div>
+          <div class="form-group">
+            <label for="lastName">Last name</label>
+            <input type="text" id="lastName" name="lastName" value="<%= user.lastName %>" required autocomplete="family-name">
+          </div>
+          <div class="form-group form-group-full">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" value="<%= user.email %>" required autocomplete="email">
+          </div>
+        </div>
+      </section>
+      <section class="form-section" aria-labelledby="photoHeading">
+        <div class="section-heading"><div><p class="eyebrow">A friendly face</p><h2 id="photoHeading">Profile photo</h2></div><%- include('../partials/icon', { name: 'camera' }) %></div>
+        <div class="upload-field">
+          <div class="photo-preview">
+            <% if (user.profilePhoto) { %>
+              <img src="<%= '/' + user.profilePhoto.replace(/^public\//, '').replace(/^\/+/, '') %>" alt="Your current profile photo" id="owner-photo" data-image-preview>
+            <% } else { %>
+              <img alt="Your selected profile photo" id="owner-photo" data-image-preview hidden>
+              <span class="photo-placeholder" aria-hidden="true"><%- include('../partials/icon', { name: 'user' }) %></span>
+            <% } %>
+          </div>
+          <div class="form-group">
+            <label for="ownerPhoto">Profile photo</label>
+            <input type="file" id="ownerPhoto" name="ownerPhoto" accept="image/jpeg,image/png,image/gif,image/webp" data-image-input="owner-photo" aria-describedby="ownerPhotoHelp">
+            <p id="ownerPhotoHelp" class="field-help">JPG, PNG, GIF, or WebP. Up to 5 MB.</p>
+          </div>
+        </div>
+      </section>
 
-  <h1>Edit Profile</h1>
-  <form action="/owner/profile" method="post">
-    <!-- Method Override to support PUT request on forms -->
-    <input type="hidden" name="_method" value="PUT">
-  
-    <label for="firstName">First Name:</label>
-    <input type="text" id="firstName" name="firstName" value="<%= user.firstName %>" required>
-  
-    <label for="lastName">Last Name:</label>
-    <input type="text" id="lastName" name="lastName" value="<%= user.lastName %>" required>
-  
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="<%= user.email %>" required>
-  
-    <h2>Change Password</h2>
-    <label for="currentPassword">Current Password:</label>
-    <input type="password" id="currentPassword" name="currentPassword">
-  
-    <label for="newPassword">New Password:</label>
-    <input type="password" id="newPassword" name="newPassword">
-  
-    <label for="confirmNewPassword">Confirm New Password:</label>
-    <input type="password" id="confirmNewPassword" name="confirmNewPassword">
-  
-    <button type="submit">Update Profile</button>
-  </form>
+      <section class="form-section" aria-labelledby="passwordHeading">
+        <div class="section-heading"><div><p class="eyebrow">Keep it secure</p><h2 id="passwordHeading">Change password</h2></div><%- include('../partials/icon', { name: 'shield' }) %></div>
+        <p class="field-help">Leave all three fields blank to keep your current password.</p>
+        <div class="form-grid">
+          <div class="form-group form-group-full">
+            <label for="currentPassword">Current password</label>
+            <input type="password" id="currentPassword" name="currentPassword" autocomplete="current-password">
+          </div>
+          <div class="form-group">
+            <label for="newPassword">New password</label>
+            <input type="password" id="newPassword" name="newPassword" minlength="6" autocomplete="new-password" aria-describedby="passwordHelp">
+            <p id="passwordHelp" class="field-help">Use at least 6 characters.</p>
+          </div>
+          <div class="form-group">
+            <label for="confirmNewPassword">Confirm new password</label>
+            <input type="password" id="confirmNewPassword" name="confirmNewPassword" minlength="6" autocomplete="new-password">
+          </div>
+        </div>
+      </section>
+      <div class="form-actions">
+        <a href="/dashboard" class="button button-secondary">Cancel</a>
+        <button type="submit" class="button button-primary"><%- include('../partials/icon', { name: 'check' }) %> Save changes</button>
+      </div>
+    </form>
 
-  <form action="/profile/delete" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
-    <input type="hidden" name="_method" value="DELETE">
-    <button type="submit" class="delete-button">Delete Account</button>
-  </form>
-  
+    <section class="danger-zone" aria-labelledby="deleteHeading">
+      <div><h2 id="deleteHeading">Delete account</h2><p>Permanently remove your account, pet profiles, and their photos. This can't be undone.</p></div>
+      <form action="/owner/profile/delete?_method=DELETE" method="post" onsubmit="return confirm('Delete your account and all your pets? This cannot be undone.');">
+        <button type="submit" class="button button-danger button-small">Delete account</button>
+      </form>
+    </section>
+  </main>
+  <%- include('../partials/footer') %>
 </body>
-<img src="../background.jpeg" alt="Description of Image" class="background-image">
-
 </html>

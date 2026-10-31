@@ -1,39 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Pet</title>
-    <link rel="stylesheet" href="/css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Pet | Pet Paradise Keepers</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/ui.js" defer></script>
 </head>
 <body>
-    <%- include('partials/header') %>
-
-    <div class="container">
-        <h1>Add Your Pet</h1>
-        <form action="/owner/addPet" method="post" enctype="multipart/form-data">
-            <div>
-                <label for="petName">Pet Name:</label>
-                <input type="text" id="petName" name="petName" required>
-            </div>
-            <div>
-                <label for="petType">Pet Type:</label>
-                <input type="text" id="petType" name="petType" required>
-            </div>
-            <div>
-                <label for="petMedicalHistory">Medical History:</label>
-                <textarea id="petMedicalHistory" name="petMedicalHistory"></textarea>
-            </div>
-            <div>
-                <label for="petPhoto">Pet Photo:</label>
-                <input type="file" id="petPhoto" name="petPhoto">
-            </div>
-            <button type="submit">Add Pet</button>
-        </form>
+  <%- include('partials/header') %>
+  <main class="page-shell page-shell-narrow" id="main-content">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Your companions</p>
+        <h1>Add your pet</h1>
+        <p class="muted">A few details to help your best friend feel right at home.</p>
+      </div>
+      <a href="/pets" class="button button-ghost button-small"><%- include('partials/icon', { name: 'arrow-left' }) %> All pets</a>
     </div>
 
+    <% if (errorMessage) { %>
+      <div class="alert" role="alert"><%= errorMessage %></div>
+    <% } %>
 
+    <form class="form-card" action="/pets/add" method="post" enctype="multipart/form-data">
+      <section class="form-section">
+        <h2>Meet your companion</h2>
+        <p class="muted">Start with their name and the kind of pet they are.</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="name">Pet name</label>
+            <input type="text" id="name" name="name" value="<%= pet.name || '' %>" maxlength="100" placeholder="e.g. Mochi" required>
+          </div>
+          <div class="form-group">
+            <label for="type">Pet type</label>
+            <input type="text" id="type" name="type" value="<%= pet.type || '' %>" maxlength="100" placeholder="e.g. Cat, dog, rabbit" required>
+          </div>
+        </div>
+      </section>
 
+      <section class="form-section">
+        <h2>A little extra care</h2>
+        <div class="form-group">
+          <label for="medicationHistory">Medical history <span class="muted">(optional)</span></label>
+          <textarea id="medicationHistory" name="medicationHistory" maxlength="5000" rows="5" placeholder="Medications, allergies, or anything helpful to know." aria-describedby="medical-help"><%= pet.medicationHistory || '' %></textarea>
+          <p class="field-help" id="medical-help">Include any health needs or care instructions. Up to 5,000 characters.</p>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>A face to love</h2>
+        <div class="upload-field">
+          <div class="photo-preview" data-photo-preview aria-label="Pet photo preview">
+            <img id="pet-photo-preview" alt="Selected pet photo" data-image-preview hidden>
+            <%- include('partials/icon', { name: 'paw' }) %>
+          </div>
+          <div class="form-group">
+            <label for="petPhoto">Pet photo <span class="muted">(optional)</span></label>
+            <input type="file" id="petPhoto" name="petPhoto" accept="image/jpeg,image/png,image/gif,image/webp" data-image-input="pet-photo-preview" aria-describedby="photo-help">
+            <p class="field-help" id="photo-help">Choose a JPG, PNG, GIF, or WebP image.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button type="submit" class="button button-primary"><%- include('partials/icon', { name: 'plus' }) %> Add Pet</button>
+        <a href="/pets" class="button button-secondary">Cancel</a>
+      </div>
+    </form>
+  </main>
+  <%- include('partials/footer') %>
 </body>
-<img src="/background.jpeg" alt="Description of Image" class="background-image">
 </html>
