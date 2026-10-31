@@ -2,7 +2,7 @@
 
 Pet Paradise Keepers is an Express application for managing pet owner and sitter profiles. Owners can keep their pets' photos and medical history together; sitters can maintain their biography, experience, and hourly rate.
 
-![Dashboard](/screenshots/homePage.png)
+![Pet Paradise Keepers homepage with owner and sitter sign-up options](/screenshots/homePage.png)
 
 ## Key Features
 
